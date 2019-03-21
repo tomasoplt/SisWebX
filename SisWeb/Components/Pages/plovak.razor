@@ -1,0 +1,63 @@
+﻿@page "/plovak/{Id}"
+@inject IUriHelper uriHelper
+@inject SisWeb.Services.Session.ISessionHelper session
+@inject SisWeb.Services.SisCore.IPlovakService plovakService
+@using SisWeb.Services.Dto.Sis
+
+@*<PopupComponent IsPopupOpen="@_isPopupOpen" Animation="PopupComponent.AnimationType.FadeIn" Title="A Popup Demo Title" />
+    <button type="button" class="btn btn-primary" onclick="@(e => OpenPopup())"><span class="oi oi-plus"></span> Open Popup</button>*@
+
+@if (plovaks == null)
+{
+    <p><em>Loading data...</em></p>
+}
+else
+{
+    <BlazorGrid Items="@plovaks" PageSize="10">
+        <GridHeader>
+            <th width="180px">Měřeno</th>
+            <th>Napětí panel</th>
+            <th>Napětí Aku</th>
+            <th width="220px">Poznámka</th>
+            <th>Náhled</th>
+            <th>Upravit</th>
+            <th>Odstranit</th>
+        </GridHeader>
+        <GridRow Context="obj">
+            <td>@obj.Mereno</td>
+            <td>@obj.NapetiPanel</td>
+            <td>@obj.NapetiAku</td>
+            <td>@obj.Poznamka</td>
+            <td><a href="plovakdetail/View/@obj.objekt_id">Náhled</a></td>
+            <td><a href="plovakdetail/Edit/@obj.objekt_id">Upravit</a></td>
+            <td><a href="plovakdetail/Remove/@obj.objekt_id">Odstranit</a></td>
+        </GridRow>
+    </BlazorGrid>
+}
+
+@functions {
+
+    bool isPopupOpen;
+    List<PlovakModelDto> plovaks;
+
+    [Parameter]
+    private string Id { get; set; }
+
+    protected override async Task OnInitAsync()
+    {
+        if (!session.AuthInformation.IsAuthentized)
+        {
+            uriHelper.NavigateTo("/login");
+            return;
+        }
+
+        plovaks = plovakService.GetPlovaky(Convert.ToInt32(Id));
+
+        base.OnInit();
+    }
+
+    void OnDropDownClickPlovak()
+    {
+
+    }
+}

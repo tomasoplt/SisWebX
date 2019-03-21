@@ -1,0 +1,21 @@
+﻿@page "/"
+@inject IUriHelper uriHelper
+@inject SisWeb.Services.Session.ISessionHelper session
+@inject SisWeb.Services.Authentication.IUserService userService
+
+<h3>Vítejte @session.AuthInformation.FirstName v aplikaci SIS</h3>
+
+@functions {
+
+    protected override async Task OnInitAsync()
+    {
+        if (!session.AuthInformation.IsAuthentized)
+        {
+            uriHelper.NavigateTo("/login");
+            return;
+        }
+
+
+        base.OnInit();
+    }
+}

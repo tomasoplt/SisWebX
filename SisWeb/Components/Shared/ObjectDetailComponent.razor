@@ -1,0 +1,94 @@
+﻿@inject IUriHelper uriHelper
+@inject SisWeb.Services.Session.ISessionHelper session
+@inject SisWeb.Services.SisCore.IObjectService objectService
+@using SisWeb.Services.Dto.Sis
+
+<Row>
+    <Column>
+        <section class="box ">
+            <header class="panel_header">
+                <h2 class="title pull-left">Detail objektu: @Obj.objekt</h2>
+                <div class="actions panel_actions pull-right">
+                    <i class="box_close fa fa-times"></i>
+                </div>
+            </header>
+            <div class="content-body">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+
+                        <div class="form-group">
+                            <label class="form-label" for="formfield1">Název objektu</label>
+                            <div class="controls">
+                                <input type="text" class="form-control" id="formfield1" name="formfield1" value=@Obj.objekt onchange=@OnObjektChanged />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="formfield2">Typ objektu</label>
+                            <div class="controls">
+                                <input type="text" class="form-control" id="formfield2" name="formfield2" value=@Obj.typ onchange=@OnObjektTypeChanged />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="formfield3">Oblast</label>
+                            <div class="controls">
+                                <input type="text" class="form-control" id="formfield3" name="formfield3" value=@Obj.oblast.TrimNull() />
+                            </div>
+                        </div>
+
+                        <div class="pull-right">
+                            <button onclick="@OnSave" class="btn btn-success">Save</button>
+                            <button onclick="@OnCancel" class="btn">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </Column>
+</Row>
+
+@functions {
+
+    [Parameter]
+    private string UserAction { get; set; }
+    [Parameter]
+    private string Id { get; set; }
+
+    private ObjectModelDto Obj { get; set; }
+
+    protected override async Task OnInitAsync()
+    {
+        if (!session.AuthInformation.IsAuthentized)
+        {
+            uriHelper.NavigateTo("/login");
+            return;
+        }
+
+        Obj = objectService.GetObject(Convert.ToInt32(Id));
+
+        base.OnInit();
+    }
+
+    void OnObjektChanged(UIChangeEventArgs changeEvent)
+    {
+        Obj.objekt = (string)changeEvent.Value;
+    }
+
+    void OnObjektTypeChanged(UIChangeEventArgs changeEvent)
+    {
+        Obj.typ = (string)changeEvent.Value;
+    }
+
+    void OnCancel()
+    {
+        uriHelper.NavigateTo("/object");
+    }
+
+    void OnSave()
+    {
+        objectService.SaveObject(Obj);
+        uriHelper.NavigateTo("/object");
+    }
+
+}

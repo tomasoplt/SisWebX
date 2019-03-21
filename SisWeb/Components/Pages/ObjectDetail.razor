@@ -1,0 +1,74 @@
+﻿@page "/objectdetail"
+@page "/objectdetail/{UserAction}/{Id}"
+
+@inject IUriHelper uriHelper
+@inject SisWeb.Services.Session.ISessionHelper session
+@inject SisWeb.Services.SisCore.IObjectService objectService
+@using SisWeb.Services.Dto.Sis
+
+<Row>
+    <Column>
+        <section class="box ">
+            <header class="panel_header">
+                <h2 class="title pull-left">Detail objektu: @Obj.objekt</h2>
+                <div class="actions panel_actions pull-right">
+                    <i class="box_close fa fa-times"></i>
+                </div>
+            </header>
+            <div class="content-body">
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+
+                        <ObjectDetailComponent UserAction="View" Id="20120011" />
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </Column>
+</Row>
+
+@functions {
+
+    [Parameter]
+    private string UserAction { get; set; }
+    [Parameter]
+    private string Id { get; set; }
+
+    private ObjectModelDto Obj { get; set; }
+
+    protected override async Task OnInitAsync()
+    {
+        if (!session.AuthInformation.IsAuthentized)
+        {
+            uriHelper.NavigateTo("/login");
+            return;
+        }
+
+        Obj = objectService.GetObject(Convert.ToInt32(Id));
+
+        base.OnInit();
+    }
+
+    void OnObjektChanged(UIChangeEventArgs changeEvent)
+    {
+        Obj.objekt = (string)changeEvent.Value;
+    }
+
+    void OnObjektTypeChanged(UIChangeEventArgs changeEvent)
+    {
+        Obj.typ = (string)changeEvent.Value;
+    }
+
+    void OnCancel()
+    {
+        uriHelper.NavigateTo("/object");
+    }
+
+    void OnSave()
+    {
+        objectService.SaveObject(Obj);
+        uriHelper.NavigateTo("/object");
+    }
+
+}

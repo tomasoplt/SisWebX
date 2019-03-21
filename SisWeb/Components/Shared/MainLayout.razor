@@ -1,0 +1,145 @@
+﻿@inherits LayoutComponentBase
+@inject SisWeb.Services.Session.ISessionHelper session
+
+
+<body class=" ">
+    <!-- START TOPBAR -->
+    <div class='page-topbar '>
+        <div class='logo-area'>
+
+        </div>
+        <div class='quick-area'>
+
+            <div class='float-right'>
+                <ul class="info-menu right-links list-inline list-unstyled">
+                    <li class="profile list-inline-item showopacity">
+                        <a href="#" data-toggle="dropdown" class="toggle">
+                            <img src="data/profile/profile.jpg" alt="user-image" class="rounded-circle img-inline">
+                            <span>Tomáš Oplt <i class="fa fa-angle-down"></i></span>
+                        </a>
+                        <ul class="dropdown-menu profile animated fadeIn">
+                            <li class="dropdown-item">
+                                <a href="login">
+                                    <i class="fa fa-user"></i>
+                                    Login
+                                </a>
+                            </li>
+                            <li class="dropdown-item">
+                                <a href="#settings">
+                                    <i class="fa fa-wrench"></i>
+                                    Settings
+                                </a>
+                            </li>
+                            <li class="dropdown-item">
+                                <a href="#help">
+                                    <i class="fa fa-info"></i>
+                                    Help
+                                </a>
+                            </li>
+                            <li class="last dropdown-item">
+                                <a href="ui-login.html">
+                                    <i class="fa fa-lock"></i>
+                                    Logout
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+    <!-- END TOPBAR -->
+    <!-- START CONTAINER -->
+    <div class="page-container row-fluid container-fluid">
+
+        <!-- SIDEBAR - START -->
+
+        <div class="page-sidebar fixedscroll">
+
+            <!-- MAIN MENU - START -->
+            <div class="page-sidebar-wrapper" id="main-menu-wrapper">
+
+                <!-- USER INFO - START -->
+                <div class="profile-info row">
+
+                    <div class="profile-image col-4">
+                        <a href="ui-profile.html">
+                            <img alt="" src="data/profile/profile.jpg" class="img-fluid rounded-circle">
+                        </a>
+                    </div>
+
+                    <div class="profile-details col-8">
+                        <h3>
+                            <a href="ui-profile.html">Tomáš Oplt</a>
+                            <span class="profile-status online"></span>
+                        </h3>
+                        <p class="profile-title">Web Developer</p>
+                    </div>
+
+                </div>
+                <!-- USER INFO - END -->
+                @*Left menu  --------  Left menu *@
+                @*Left menu  --------  Left menu *@
+
+                <ul class='wraplist'>
+
+                    @if (session.Localities != null)
+                    {
+                        @foreach (var loc in session.Localities)
+                        {
+                            <li class="">
+                                <a href="object">
+                                    <i class="fa fa-dashboard"></i>
+                                    <span class="title">@loc.LocalityName</span>
+                                </a>
+
+                                @foreach (var obj in loc.Objekty)
+                                {
+                                    if (obj.Plovaky.Count == 0)
+                                    {
+                                        continue;
+                                    }
+                                    <ul class="sub-menu" style="display:block;">
+                                        <li>
+                                            <a class="" href="object">
+                                                @obj.objekt
+                                            </a>
+
+                                            @foreach (var plovak in obj.Plovaky)
+                                            {
+                                                <ul class="sub-menu" style="display:block;">
+                                                    <li>
+                                                        <a class="" href="fetchdata">@("Plovák " + plovak.PlovakId) </a>
+                                                    </li>
+                                                </ul>
+                                            }
+
+                                        </li>
+                                    </ul>
+                                }
+                            </li>
+                        }
+                    };
+
+                </ul>
+            </div>
+
+        </div>
+        <!--  SIDEBAR - END -->
+        <!-- START CONTENT -->
+        <section id="main-content" class=" ">
+            <section class="wrapper main-wrapper row" style=''>
+                <div class="clearfix"></div>
+                <!-- MAIN CONTENT AREA STARTS -->
+                @Body
+                <!-- MAIN CONTENT AREA ENDS -->
+            </section>
+        </section>
+        <!-- END CONTENT -->
+
+        <div class="chatapi-windows ">
+
+        </div>
+    </div>
+</body>

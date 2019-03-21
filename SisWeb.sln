@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28621.142
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SisWeb", "SisWeb\SisWeb.csproj", "{BE8E4BF7-6429-4D74-9250-40E60C162673}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.Core", "Core.Base\Core.Core.csproj", "{7F2AEA48-D96A-4CD5-81EA-49B798115A67}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.EF", "Core.EF\Core.EF.csproj", "{414B2C89-4FB3-4A9C-A5CB-D4C24D2ED7CE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SisWeb.EF", "SisWeb.EF\SisWeb.EF.csproj", "{561D8EA8-8A36-4C84-9B85-2957240B6024}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.Services", "Core.Infrastructure\Core.Services.csproj", "{273025BB-2C4C-402E-B180-AA5FCFD01A21}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorGridComponent", "BlazorGridComponent\BlazorGridComponent.csproj", "{8FE5F23E-90A8-40A2-BA75-17CC4F18E7EF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SisWeb.Services", "SisWeb.Services\SisWeb.Services.csproj", "{780DC0B7-37C5-4BDE-8B99-A8C115934B66}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BE8E4BF7-6429-4D74-9250-40E60C162673}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE8E4BF7-6429-4D74-9250-40E60C162673}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE8E4BF7-6429-4D74-9250-40E60C162673}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE8E4BF7-6429-4D74-9250-40E60C162673}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F2AEA48-D96A-4CD5-81EA-49B798115A67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F2AEA48-D96A-4CD5-81EA-49B798115A67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F2AEA48-D96A-4CD5-81EA-49B798115A67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F2AEA48-D96A-4CD5-81EA-49B798115A67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{414B2C89-4FB3-4A9C-A5CB-D4C24D2ED7CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{414B2C89-4FB3-4A9C-A5CB-D4C24D2ED7CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{414B2C89-4FB3-4A9C-A5CB-D4C24D2ED7CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{414B2C89-4FB3-4A9C-A5CB-D4C24D2ED7CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{561D8EA8-8A36-4C84-9B85-2957240B6024}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{561D8EA8-8A36-4C84-9B85-2957240B6024}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{561D8EA8-8A36-4C84-9B85-2957240B6024}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{561D8EA8-8A36-4C84-9B85-2957240B6024}.Release|Any CPU.Build.0 = Release|Any CPU
+		{273025BB-2C4C-402E-B180-AA5FCFD01A21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{273025BB-2C4C-402E-B180-AA5FCFD01A21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{273025BB-2C4C-402E-B180-AA5FCFD01A21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{273025BB-2C4C-402E-B180-AA5FCFD01A21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FE5F23E-90A8-40A2-BA75-17CC4F18E7EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FE5F23E-90A8-40A2-BA75-17CC4F18E7EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FE5F23E-90A8-40A2-BA75-17CC4F18E7EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FE5F23E-90A8-40A2-BA75-17CC4F18E7EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{780DC0B7-37C5-4BDE-8B99-A8C115934B66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{780DC0B7-37C5-4BDE-8B99-A8C115934B66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{780DC0B7-37C5-4BDE-8B99-A8C115934B66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{780DC0B7-37C5-4BDE-8B99-A8C115934B66}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CD814812-D9AD-4274-909E-D357CF57531C}
+	EndGlobalSection
+EndGlobal
