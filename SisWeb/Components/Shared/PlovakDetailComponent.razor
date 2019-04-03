@@ -1,0 +1,17 @@
+﻿@inject IUriHelper uriHelper
+@inject SisWeb.Services.Session.ISessionHelper session
+@inject SisWeb.Services.SisCore.IPlovakService plovakService
+@using SisWeb.Services.Dto.Sis
+
+
+@functions {
+
+    [Parameter]
+    private string UserAction { get; set; }
+    [Parameter]
+    private PlovakModelDto Obj { get; set; }
+
+
+
+
+}

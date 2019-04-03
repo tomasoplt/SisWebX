@@ -36,8 +36,7 @@ namespace SisWeb
             services.AddFontAwesomeIcons();
             services.AddTransient(typeof(IRepository<Uzivatele, int>), typeof(EfCoreRepositoryBase<Uzivatele, int>));
             services.AddApplicationServices();
-
-
+            services.AddKendoBlazor();
             services.AddRazorComponents();
         }
 
@@ -47,6 +46,11 @@ namespace SisWeb
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseDeveloperExceptionPage();
+                //app.UseExceptionHandler("/Error");
             }
 
             app.UseStaticFiles();

@@ -12,6 +12,7 @@ namespace SisWeb.Services
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IObjectService, ObjectService>();
             services.AddTransient<IPlovakService, PlovakService>();
+            services.AddTransient<IMrakService, MrakService>();
             services.AddSingleton<ISessionHelper, SessionHelper>();
         }
     }

@@ -60,7 +60,6 @@
     async void LoginUser()
     {
         var result = await userService.LoginUser(username, password, true);
-
         if (result.IsAuthentized)
         {
             session.AuthInformation.Username = username;

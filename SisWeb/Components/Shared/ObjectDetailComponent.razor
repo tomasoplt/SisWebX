@@ -1,78 +1,291 @@
 ﻿@inject IUriHelper uriHelper
 @inject SisWeb.Services.Session.ISessionHelper session
 @inject SisWeb.Services.SisCore.IObjectService objectService
+@inject SisWeb.Services.SisCore.IMrakService mrakService
 @using SisWeb.Services.Dto.Sis
+@using SisWeb.Services.SisCore
 
-<Row>
-    <Column>
-        <section class="box ">
-            <header class="panel_header">
-                <h2 class="title pull-left">Detail objektu: @Obj.objekt</h2>
-                <div class="actions panel_actions pull-right">
-                    <i class="box_close fa fa-times"></i>
-                </div>
-            </header>
-            <div class="content-body">
-                <div class="row">
-                    <div class="col-md-12 col-sm-12 col-xs-12">
-
-                        <div class="form-group">
-                            <label class="form-label" for="formfield1">Název objektu</label>
-                            <div class="controls">
-                                <input type="text" class="form-control" id="formfield1" name="formfield1" value=@Obj.objekt onchange=@OnObjektChanged />
+@if (@Obj != null)
+{
+    <Row>
+        <Column>
+            <section class="box">
+                <header class="panel_header">
+                    <h2 class="title pull-left">Detail objektu: @Obj.objekt</h2>
+                    <div class="actions panel_actions pull-right">
+                        <i class="box_close fa fa-times"></i>
+                    </div>
+                </header>
+                <div class="content-body">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6 col-xs-6">
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label col-form-label-sm" for="formfield1">Název objektu</label>
+                                <div class="col-sm-10">
+                                    <input type="text" readonly=@IsReadonly() class="form-control" id="txtobjekt" name="txtobjekt" value=@Obj.objekt onchange=@OnObjektChanged />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label col-form-label-sm" for="formfield1">Typ objektu</label>
+                                <div class="col-sm-10">
+                                    <select class="form-control" onchange="@OnObjektTypeChanged" disabled=@IsReadonly()>
+                                        <option selected=@IsSelectedTypObjektu("") value="">-- Vyber typ --</option>
+                                        <option selected=@IsSelectedTypObjektu("Plovák") value="Plovák">Plovák</option>
+                                        <option selected=@IsSelectedTypObjektu("Vrt") value="Vrt">Vrt</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label col-form-label-sm" for="formfield1">Oblast</label>
+                                <div class="col-sm-10">
+                                    <select class="form-control" onchange="@OnOblastChanged" disabled=@IsReadonly()>
+                                        <option value="">-- Vyber typ --</option>
+                                        @foreach (var mrak in mraky)
+                                        {
+                                            <option selected=@IsSelectedOblast(@mrak.mrak_id) value="@mrak.mrak_id">@mrak.mrak</option>
+                                        }
+                                    </select>
+                                </div>
                             </div>
                         </div>
-
-                        <div class="form-group">
-                            <label class="form-label" for="formfield2">Typ objektu</label>
-                            <div class="controls">
-                                <input type="text" class="form-control" id="formfield2" name="formfield2" value=@Obj.typ onchange=@OnObjektTypeChanged />
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label" for="formfield3">Oblast</label>
-                            <div class="controls">
-                                <input type="text" class="form-control" id="formfield3" name="formfield3" value=@Obj.oblast.TrimNull() />
-                            </div>
-                        </div>
-
-                        <div class="pull-right">
-                            <button onclick="@OnSave" class="btn btn-success">Save</button>
-                            <button onclick="@OnCancel" class="btn">Cancel</button>
+                        <div class="col-md-6 col-sm-6 col-xs-6">
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
-    </Column>
-</Row>
+            </section>
+
+            <section class="box">
+                <header class="panel_header">
+                    <h2 class="title pull-left">Poloha</h2>
+                    <div class="actions panel_actions pull-right">
+                        <i class="box_close fa fa-times"></i>
+                    </div>
+                </header>
+                <div class="content-body">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6 col-xs-6">
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label col-form-label-sm" for="formfield1">X</label>
+                                <div class="col-sm-10">
+                                    <input type="text" readonly=@IsReadonly() placeholder="X" class="form-control form-control-sm" id="txtX" name="txtX" value=@Obj.x onchange=@OnObjektChangedX />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label col-form-label-sm" for="formfield1">Y</label>
+                                <div class="col-sm-10">
+                                    <input type="text" readonly=@IsReadonly() placeholder="Y" class="form-control form-control-sm" id="txtY" name="txtY" value=@Obj.y onchange=@OnObjektChangedY />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label col-form-label-sm" for="formfield1">Z</label>
+                                <div class="col-sm-10">
+                                    <input type="text" readonly=@IsReadonly() placeholder="Z" class="form-control form-control-sm" id="txtZ" name="txtZ" value=@Obj.z onchange=@OnObjektChangedZ />
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-md-6 col-sm-6 col-xs-6">
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label col-form-label-sm" for="formfield1">N GPS</label>
+                                <div class="col-sm-10">
+                                    <input type="text" readonly=@IsReadonly() placeholder="N GPS" class="form-control form-control-sm" id="txtn_gps" name="txtn_gps" value=@Obj.n_gps onchange=@OnObjektChangedn_gps />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label col-form-label-sm" for="formfield1">E GPS</label>
+                                <div class="col-sm-10">
+                                    <input type="text" readonly=@IsReadonly() placeholder="E GPS" class="form-control form-control-sm" id="txte_gps" name="txte_gps" value=@Obj.e_gps onchange=@OnObjektChangede_gps />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label col-form-label-sm" for="formfield1">Z GPS</label>
+                                <div class="col-sm-10">
+                                    <input type="text" readonly=@IsReadonly() placeholder="Z GPS" class="form-control form-control-sm" id="txtz_gps" name="txtz_gps" value=@Obj.z_gps onchange=@OnObjektChangedz_gps />
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="box">
+                <header class="panel_header">
+                    <h2 class="title pull-left">Doplňující informace</h2>
+                    <div class="actions panel_actions pull-right">
+                        <i class="box_close fa fa-times"></i>
+                    </div>
+                </header>
+                <div class="content-body">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label col-form-label-sm" for="formfield1">Technologie</label>
+                                <div class="col-sm-10">
+                                    <input type="text" readonly=@IsReadonly() placeholder="" class="form-control form-control-sm" id="txtTechnologie" name="txtTechnologie" value=@Obj.technologie onchange=@OnObjektChangedTech />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label col-form-label-sm" for="formfield1">Reference</label>
+                                <div class="col-sm-10">
+                                    <input type="text" readonly=@IsReadonly() placeholder="" class="form-control form-control-sm" id="txtReference" name="txtReference" value=@Obj.reference onchange=@OnObjektChangedRef />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label col-form-label-sm" for="formfield1">Poznámka</label>
+                                <div class="col-sm-10">
+                                    <input type="text" readonly=@IsReadonly() placeholder="" class="form-control form-control-sm" id="txtPoznamka" name="txtPoznamka" value=@Obj.poznamka onchange=@OnObjektChangedPozn />
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <br />
+
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="pull-right">
+                                <button onclick="@OnSave" class="btn btn-success">Save</button>
+                                <button onclick="@OnCancel" class="btn">Cancel</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+        </Column>
+    </Row>
+}
 
 @functions {
 
-    [Parameter]
     private string UserAction { get; set; }
-    [Parameter]
-    private string Id { get; set; }
+    private string LocalityId { get; set; }
+    private string ObjektId { get; set; }
 
     private ObjectModelDto Obj { get; set; }
+    private List<MrakModelDto> mraky;
 
-    protected override async Task OnInitAsync()
+    protected override void OnInit()
     {
         if (!session.AuthInformation.IsAuthentized)
         {
             uriHelper.NavigateTo("/login");
             return;
         }
+    }
 
-        Obj = objectService.GetObject(Convert.ToInt32(Id));
+    protected override void OnParametersSet()
+    {
+        LocalityId = session.NavigateModel.LocalityId;
+        ObjektId = session.NavigateModel.ObjektId;
+        UserAction = session.NavigateModel.Action;
 
-        base.OnInit();
+
+        session.SetLocality(Convert.ToInt32(LocalityId));
+        ((ObjectService)(objectService)).SetConnectionString();
+        ((MrakService)(mrakService)).SetConnectionString();
+
+
+        if (UserAction == "New")
+        {
+            Obj = new ObjectModelDto();
+        }
+        else
+        {
+            Obj = objectService.GetObject(Convert.ToInt32(ObjektId));
+        }
+
+        mraky = mrakService.GetMraky();
+
+
+        base.OnParametersSet();
+    }
+
+    bool IsReadonly()
+    {
+        return (UserAction != SisWeb.Services.Enums.UserActionType.New.ToString() && UserAction != SisWeb.Services.Enums.UserActionType.Edit.ToString());
+    }
+
+    bool IsSelectedTypObjektu(string itemVal)
+    {
+        return (itemVal == Obj.typ);
+    }
+
+    bool IsSelectedOblast(int? itemVal)
+    {
+        if (itemVal == null)
+            return false;
+
+        return (itemVal.Value == Obj.MrakId);
     }
 
     void OnObjektChanged(UIChangeEventArgs changeEvent)
     {
         Obj.objekt = (string)changeEvent.Value;
+    }
+
+    void OnOblastChanged(UIChangeEventArgs changeEvent)
+    {
+        if (changeEvent.Value != null && changeEvent.Value != "")
+            Obj.MrakId = Convert.ToInt32(changeEvent.Value);
+        else
+            Obj.MrakId = null;
+    }
+
+    void OnObjektChangedX(UIChangeEventArgs changeEvent)
+    {
+        Obj.x = GetDouble(changeEvent.Value);
+    }
+    void OnObjektChangedY(UIChangeEventArgs changeEvent)
+    {
+        Obj.y = GetDouble(changeEvent.Value);
+    }
+    void OnObjektChangedZ(UIChangeEventArgs changeEvent)
+    {
+        Obj.z = GetDouble(changeEvent.Value);
+    }
+    void OnObjektChangedn_gps(UIChangeEventArgs changeEvent)
+    {
+        Obj.n_gps = GetDouble(changeEvent.Value);
+    }
+    void OnObjektChangede_gps(UIChangeEventArgs changeEvent)
+    {
+        Obj.e_gps = GetDouble(changeEvent.Value);
+    }
+    void OnObjektChangedz_gps(UIChangeEventArgs changeEvent)
+    {
+        Obj.z_gps = GetDouble(changeEvent.Value);
+    }
+    void OnObjektChangedTech(UIChangeEventArgs changeEvent)
+    {
+        Obj.technologie = (string)changeEvent.Value;
+    }
+    void OnObjektChangedRef(UIChangeEventArgs changeEvent)
+    {
+        Obj.reference = (string)changeEvent.Value;
+    }
+    void OnObjektChangedPozn(UIChangeEventArgs changeEvent)
+    {
+        Obj.poznamka = (string)changeEvent.Value;
+    }
+
+    private double? GetDouble(object value)
+    {
+        if (value == null)
+            return null;
+
+        bool res = double.TryParse(value.ToString(), out double result);
+        if (res)
+            return result;
+
+        return null;
+    }
+
+    string ComboTypObjektu
+    {
+        get { return Obj.typ; }
+        set { Obj.typ = value; }
     }
 
     void OnObjektTypeChanged(UIChangeEventArgs changeEvent)
@@ -82,13 +295,23 @@
 
     void OnCancel()
     {
-        uriHelper.NavigateTo("/object");
+        uriHelper.NavigateTo("/objekt");
     }
 
     void OnSave()
     {
+        if (UserAction == "New")
+        {
+            Obj.new_u = session.AuthInformation.Username;
+        }
+        else
+        {
+            Obj.modif_u = session.AuthInformation.Username;
+        }
         objectService.SaveObject(Obj);
-        uriHelper.NavigateTo("/object");
+        uriHelper.NavigateTo("/objekt");
     }
 
 }
+
+

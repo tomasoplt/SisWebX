@@ -1,0 +1,32 @@
+﻿@using BlazorComponents.ChartJS
+@using Microsoft.AspNetCore.Components;
+@inherits ChartBase
+@inject ChartJSInterop chartJSInterop
+
+<div class="row">
+    <div class="container">
+        <canvas id="@Chart.CanvasId" width="@Width" height="@Height"></canvas>
+    </div>
+</div>
+
+@functions {
+
+    [Parameter]
+    ChartJSPieChart Chart { get; set; }
+
+    protected override void OnAfterRender()
+    {
+        chartJSInterop.InitializePieChart(Chart);
+    }
+
+    public void UpdateChart(ChartJSPieChart updatedChart)
+    {
+        chartJSInterop.UpdatePieChart(updatedChart);
+    }
+
+    protected override IChart GetChart()
+    {
+        return Chart;
+    }
+
+}

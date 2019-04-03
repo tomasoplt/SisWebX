@@ -9,7 +9,5 @@ namespace Core.Services.Application
     /// </summary>
     public interface IApplicationService : ITransientDependency
     {
-        void SetContext(AppDbContext context);
-        AppDbContext GetContext(Func<AppDbContext> appContext);
     }
 }

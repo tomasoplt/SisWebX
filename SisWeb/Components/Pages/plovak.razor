@@ -1,11 +1,17 @@
-﻿@page "/plovak/{Id}"
+﻿@page "/plovak"
+
+@using SisWeb.Services.Dto.Sis
+@using Kendo.Blazor.Components.Grid
+@using SisWeb.Services.SisCore
+@using ChartJs.Blazor.ChartJS.LineChart
+@using Newtonsoft.Json
+@using SisWeb.Graphs
+@using Microsoft.Extensions.Configuration;
+
 @inject IUriHelper uriHelper
 @inject SisWeb.Services.Session.ISessionHelper session
 @inject SisWeb.Services.SisCore.IPlovakService plovakService
-@using SisWeb.Services.Dto.Sis
-
-@*<PopupComponent IsPopupOpen="@_isPopupOpen" Animation="PopupComponent.AnimationType.FadeIn" Title="A Popup Demo Title" />
-    <button type="button" class="btn btn-primary" onclick="@(e => OpenPopup())"><span class="oi oi-plus"></span> Open Popup</button>*@
+@inject IConfiguration configuration
 
 @if (plovaks == null)
 {
@@ -13,37 +19,50 @@
 }
 else
 {
-    <BlazorGrid Items="@plovaks" PageSize="10">
-        <GridHeader>
-            <th width="180px">Měřeno</th>
-            <th>Napětí panel</th>
-            <th>Napětí Aku</th>
-            <th width="220px">Poznámka</th>
-            <th>Náhled</th>
-            <th>Upravit</th>
-            <th>Odstranit</th>
-        </GridHeader>
-        <GridRow Context="obj">
-            <td>@obj.Mereno</td>
-            <td>@obj.NapetiPanel</td>
-            <td>@obj.NapetiAku</td>
-            <td>@obj.Poznamka</td>
-            <td><a href="plovakdetail/View/@obj.objekt_id">Náhled</a></td>
-            <td><a href="plovakdetail/Edit/@obj.objekt_id">Upravit</a></td>
-            <td><a href="plovakdetail/Remove/@obj.objekt_id">Odstranit</a></td>
-        </GridRow>
-    </BlazorGrid>
-}
+    <Row>
+        <Column>
+            <button class="btn btn-primary" onclick="@UpdateChart">Obnov graf</button>
+        </Column>
+    </Row>
+
+        <ChartJsLineChart ref="lineChartJs"
+                          Config="@lineChartConfig"
+                          Width="600"
+                          Height="200" />
+
+        <br />
+
+        <KendoGrid Data=@plovaks Pageable=true PageSize=20 Sortable=true>
+
+            <KendoGridColumns>
+                <KendoGridColumn Title="Měřeno" Field=@nameof(PlovakModelDto.Mereno) />
+                <KendoGridColumn Title="Napětí panel" Field=@nameof(PlovakModelDto.NapetiPanel) />
+                <KendoGridColumn Title="Napětí Aku" Field=@nameof(PlovakModelDto.NapetiAku) />
+                <KendoGridColumn Title="Poznámka" Field=@nameof(PlovakModelDto.Poznamka) />
+
+                <KendoGridCommandColumn>
+                    <KendoGridCommandButton Command="View" Icon="edit" OnClick="TriggerView">Náhled</KendoGridCommandButton>
+                    <KendoGridCommandButton Command="View" Icon="edit" OnClick="TriggerEdit">Upravit</KendoGridCommandButton>
+                    <KendoGridCommandButton Command="Delete" Icon="delete" OnClick="TriggerRemove">Odstranit</KendoGridCommandButton>
+                </KendoGridCommandColumn>
+            </KendoGridColumns>
+
+        </KendoGrid>
+    }
 
 @functions {
 
-    bool isPopupOpen;
-    List<PlovakModelDto> plovaks;
+    private List<PlovakModelDto> plovaks;
 
-    [Parameter]
-    private string Id { get; set; }
+    private string UserAction { get; set; }
+    private string LocalityId { get; set; }
+    private string ObjektId { get; set; }
 
-    protected override async Task OnInitAsync()
+    public LineChartConfig lineChartConfig { get; set; }
+    ChartJsLineChart lineChartJs;
+
+
+    protected override void OnInit()
     {
         if (!session.AuthInformation.IsAuthentized)
         {
@@ -51,13 +70,85 @@ else
             return;
         }
 
-        plovaks = plovakService.GetPlovaky(Convert.ToInt32(Id));
+        LocalityId = session.NavigateModel.LocalityId;
+        ObjektId = session.NavigateModel.ObjektId;
+        UserAction = session.NavigateModel.Action;
+
+        session.SetLocality(Convert.ToInt32(LocalityId));
+        ((PlovakService)(plovakService)).SetConnectionString();
+
+        plovaks = plovakService.GetPlovaky(Convert.ToInt32(ObjektId));
+        session.BackUrl = $"/objekt/{LocalityId.ToString()}";
+
+        var graphSection = configuration.GetSection("Graph");
+        var settingsSection = graphSection.GetSection("Settings");
+        int maxRecords = settingsSection.GetValue<int>("MaxRecords");
+
+        var lineChartSvc = new LineChartService();
+        lineChartConfig = lineChartSvc.GetConfiguration("Plováky", plovaks.Take(maxRecords).ToList());
+
 
         base.OnInit();
     }
 
-    void OnDropDownClickPlovak()
+    string DataStr
+    {
+        get => JsonConvert.SerializeObject(lineChartConfig.Data, Formatting.Indented);
+        set
+        {
+            lineChartConfig.Data = JsonConvert.DeserializeObject<LineChartData>(value);
+            Console.WriteLine(JsonConvert.SerializeObject(lineChartConfig.Data));
+        }
+    }
+
+    void OnDataStrChange(string dataStr)
+    {
+        lineChartConfig.Data = JsonConvert.DeserializeObject<LineChartData>(dataStr);
+        lineChartJs.Update();
+    }
+
+    private void UpdateChart()
+    {
+        //Update existing dataset
+        var rand = new Random();
+        lineChartConfig.Data.Labels.Add($"New{DateTime.Now.Second}");
+        var newVal = rand.Next(lineChartConfig.Data.Datasets.SelectMany(dataset => dataset.Data).Select(Convert.ToInt32).Max());
+        newVal -= 4;
+        lineChartConfig.Data.Datasets.ForEach(dataset =>
+        {
+            dataset.Data.Add(newVal);
+            newVal += rand.Next(4);
+        });
+    }
+
+    protected override void OnParametersSet()
     {
 
+
+        base.OnParametersSet();
     }
+
+    void ViewDetail(string action, int id)
+    {
+        session.NavigateModel.Action = action;
+        session.NavigateModel.PlovakId = id.ToString();
+        uriHelper.NavigateTo("/plovakdetail");
+    }
+
+    void TriggerView(GridCommandEventArgs args)
+    {
+        var item = (args.Item as PlovakModelDto);
+        ViewDetail("View", item.PlovakId.Value);
+    }
+    void TriggerEdit(GridCommandEventArgs args)
+    {
+        var item = (args.Item as PlovakModelDto);
+        ViewDetail("Edit", item.PlovakId.Value);
+    }
+    void TriggerRemove(GridCommandEventArgs args)
+    {
+        var item = (args.Item as PlovakModelDto);
+        ViewDetail("Remove", item.PlovakId.Value);
+    }
+
 }

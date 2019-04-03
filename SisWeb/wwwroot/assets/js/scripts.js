@@ -266,27 +266,7 @@ jQuery(function($) {
      --------------------------------*/
     CMPLTADMIN_SETTINGS.viewportElement = function() {
 
-        if ($.isFunction($.fn.viewportChecker)) {
-
-            $('.inviewport').viewportChecker({
-                callbackFunction: function(elem, action) {
-                    //setTimeout(function(){
-                    //elem.html((action == "add") ? 'Callback with 500ms timeout: added class' : 'Callback with 500ms timeout: removed class');
-                    //},500);
-                }
-            });
-
-
-            $('.number_counter').viewportChecker({
-                classToAdd: 'start_timer',
-                offset: 10,
-                callbackFunction: function(elem) {
-                    $('.start_timer:not(.counted)').each(count);
-                    //$(elem).removeClass('number_counter');
-                }
-            });
-
-        }
+       
 
         // start count
         function count(options) {

@@ -1,0 +1,41 @@
+﻿@page "/objektdetail"
+
+@inject IUriHelper uriHelper
+@inject SisWeb.Services.Session.ISessionHelper session
+@inject SisWeb.Services.SisCore.IObjectService objectService
+@using SisWeb.Services.Dto.Sis
+
+@if (ObjektId != null)
+{ 
+    <ObjectDetailComponent />
+}
+
+@functions {
+
+    private string UserAction { get; set; }
+    private string LocalityId { get; set; }
+    private string ObjektId { get; set; }
+
+    private ObjectModelDto Obj { get; set; }
+
+    protected override void OnInit()
+    {
+        if (!session.AuthInformation.IsAuthentized)
+        {
+            uriHelper.NavigateTo("/login");
+            return;
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        LocalityId = session.NavigateModel.LocalityId;
+        ObjektId = session.NavigateModel.ObjektId;
+        UserAction = session.NavigateModel.Action;
+
+        session.BackUrl = $"/objekt/{LocalityId}";
+
+        base.OnParametersSet();
+    }
+
+}

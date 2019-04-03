@@ -1,5 +1,105 @@
-﻿https://drive.google.com/drive/folders/1DZDYsKB-MWu4aR-D9Pp837Bb8KHLMJn5
+﻿https://github.com/dotnet/core/blob/master/release-notes/3.0/preview/3.0.0-preview3.md
+https://drive.google.com/drive/folders/1DZDYsKB-MWu4aR-D9Pp837Bb8KHLMJn5
 Blazorise: https://blazorise.com/docs/
+
+Todo:
+uzel disabled - po najeti chyba text 
+Deploy na IIS 
+Nacteni objektu na novem serveru nejde - report chyby
+config
+
+
+Melo by byt sptravne takto
+<p class="age">
+        Age (years): <InputNumber bind-Value="@person.AgeInYears" />
+    </p>
+
+ <BlazorGrid Items="@plovaks" PageSize="10">
+        <GridHeader>
+            <th width="180px">Měřeno</th>
+            <th>Napětí panel</th>
+            <th>Napětí Aku</th>
+            <th width="220px">Poznámka</th>
+            <th>Náhled</th>
+            <th>Upravit</th>
+            <th>Odstranit</th>
+        </GridHeader>
+        <GridRow Context="obj">
+            <td>@obj.Mereno</td>
+            <td>@obj.NapetiPanel</td>
+            <td>@obj.NapetiAku</td>
+            <td>@obj.Poznamka</td>
+            <td> <button type="button" style="padding:0px;font-size:14px" onclick="@(e => ViewDetail("View", @obj.PlovakId.Value))" class="btn btn-link">Náhled</button> </td>
+            <td> <button type="button" style="padding:0px;font-size:14px" onclick="@(e => ViewDetail("Edit", @obj.PlovakId.Value))" class="btn btn-link">Upravit</button> </td>
+            <td> <button type="button" style="padding:0px;font-size:14px" onclick="@(e => ViewDetail("Remove", @obj.PlovakId.Value))" class="btn btn-link">Odstranit</button> </td>
+        </GridRow>
+    </BlazorGrid>
+
+           <BlazorGrid Items="@objects" PageSize="10">
+                <GridHeader>
+                    <th width="280px">Objekt</th>
+                    <th>Typ objektu</th>
+                    <th>Oblast</th>
+                    <th>Náhled</th>
+                    <th>Upravit</th>
+                    <th>Odstranit</th>
+                    <th>Plovák</th>
+                    @*<th>Akce</th>*@
+                </GridHeader>
+                <GridRow Context="obj">
+                    <td>@obj.objekt</td>
+                    <td>@obj.typ</td>
+                    <td>@obj.oblast</td>
+                    <td><a href="/objektdetail/View/@obj.objekt_id.Value">Náhled</a></td>
+                    <td><a href="/objektdetail/Edit/@obj.objekt_id.Value">Upravit</a></td>
+                    <td><a href="/objektdetail/Remove/@obj.objekt_id.Value">Odstranit</a></td>
+                    <td><a href="/plovak/View/@obj.objekt_id.Value">Plovák</a></td>
+                    @*<td>
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Akce</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/plovak/View/@obj.objekt_id.Value">Plovák</a>
+                            </div>
+                        </li>
+                    </ul>
+                </td>*@
+                </GridRow>
+            </BlazorGrid>
+
+
+ <KendoGridColumn Field=@nameof(ObjectModelDto.objekt_id) Title="Náhled">
+                        <Template>
+                            @{
+                                var item = context as ObjectModelDto;
+                                <a href="/objektdetail/View/@item.objekt_id.Value">Náhled</a>
+                            }
+                        </Template>
+                    </KendoGridColumn>
+                    <KendoGridColumn Field=@nameof(ObjectModelDto.objekt_id) Title="Upravit">
+                        <Template>
+                            @{
+                                var item = context as ObjectModelDto;
+                                <a href="/objektdetail/Edit/@item.objekt_id.Value">Upravit</a>
+                            }
+                        </Template>
+                    </KendoGridColumn>
+                    <KendoGridColumn Field=@nameof(ObjectModelDto.objekt_id) Title="Odstranit">
+                        <Template>
+                            @{
+                                var item = context as ObjectModelDto;
+                                <a href="/objektdetail/Remove/@item.objekt_id.Value">Odstranit</a>
+                            }
+                        </Template>
+                    </KendoGridColumn>
+                    <KendoGridColumn Field=@nameof(ObjectModelDto.objekt_id) Title="Plovák">
+                        <Template>
+                            @{
+                                var item = context as ObjectModelDto;
+                                <a href="/plovak/View/@item.objekt_id.Value">Plovák</a>
+                            }
+                        </Template>
+                    </KendoGridColumn>
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>

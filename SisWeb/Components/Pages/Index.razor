@@ -1,11 +1,13 @@
 ﻿@page "/"
+
 @inject IUriHelper uriHelper
 @inject SisWeb.Services.Session.ISessionHelper session
 @inject SisWeb.Services.Authentication.IUserService userService
 
 <h3>Vítejte @session.AuthInformation.FirstName v aplikaci SIS</h3>
 
-@functions {
+@functions { 
+
 
     protected override async Task OnInitAsync()
     {
@@ -15,7 +17,7 @@
             return;
         }
 
-
         base.OnInit();
     }
 }
+

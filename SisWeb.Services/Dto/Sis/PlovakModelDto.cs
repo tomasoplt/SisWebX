@@ -10,5 +10,7 @@ namespace SisWeb.Services.Dto.Sis
         public double? NapetiPanel { get; set; }
         public double? NapetiAku { get; set; }
         public string Poznamka { get; set; }
+        public string modif_u { get; set; }
+        
     }
 }

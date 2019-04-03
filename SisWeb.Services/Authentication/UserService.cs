@@ -1,4 +1,5 @@
 ﻿using Core.Services.Application;
+using Microsoft.Extensions.Logging;
 using SisWeb.EF.Models;
 using SisWeb.Services.Dto.Authentication;
 using SisWeb.Services.Dto.Sis;
@@ -21,11 +22,13 @@ namespace SisWeb.Services.Authentication
     {
         private ISessionHelper _sessionHelper;
         private IObjectService _objectService;
+        private readonly ILogger _log;
 
-        public UserService(ISessionHelper sessionHelper, IObjectService objectService)
+        public UserService(ISessionHelper sessionHelper, IObjectService objectService, ILogger<UserService> log)
         {
             _sessionHelper = sessionHelper;
             _objectService = objectService;
+            _log = log;
         }
 
         public async Task<AuthResultDto> LoginUser(string login, string password, bool hashPassword)
@@ -79,13 +82,22 @@ namespace SisWeb.Services.Authentication
                 list.Add(item);
             }
 
-            var localLocality = list.SingleOrDefault(x => x.Url == _sessionHelper.BaseUri);
+            _sessionHelper.Localities = list;
+
+            var localLocality = list.FirstOrDefault(x => x.Url == _sessionHelper.BaseUri);
             if ( localLocality != null)
             {
-                string connectionString = $"Server={localLocality.DbServer}; Database={localLocality.DbCatalog}; Trusted_Connection=True;";
-                SISContext context = new SISContext(connectionString);
-                ((ObjectService)_objectService).SetContext(context);
-                localLocality.Objekty = _objectService.GetObjects();
+                try
+                {
+                    ObjectService objectService = _objectService as ObjectService;
+                    _sessionHelper.SetLocality(localLocality.LocalityId.Value);
+                    objectService.SetConnectionString();
+                    localLocality.Objekty = _objectService.GetObjects(true);
+                }
+                catch ( Exception ex)
+                {
+                    _log.LogError(ex, "GetObjects");
+                }
             }
 
 

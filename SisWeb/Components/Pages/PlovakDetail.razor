@@ -1,0 +1,138 @@
+﻿@page "/plovakdetail"
+@page "/plovakdetail/{UserAction}/{Id}"
+
+@using SisWeb.Services.Dto.Sis
+@using SisWeb.Services.SisCore
+
+@inject IUriHelper uriHelper
+@inject SisWeb.Services.Session.ISessionHelper session
+@inject SisWeb.Services.SisCore.IPlovakService plovakService
+
+@if (@Obj != null)
+{
+    <Row>
+        <Column>
+            <section class="box ">
+                <header class="panel_header">
+                    <h2 class="title pull-left">Detail plováku: @Obj.PlovakId</h2>
+                    <div class="actions panel_actions pull-right">
+                        <i class="box_close fa fa-times"></i>
+                    </div>
+                </header>
+                <div class="content-body">
+                    <div class="row">
+
+                        <div class="col-md-6 col-sm-6 col-xs-6">
+                            <div class="form-group row">
+                                <label class="col-sm-6 col-form-label col-form-label-sm" for="formfield1">Napětí na panelu [V]</label>
+                                <div class="col-sm-6">
+                                    <input type="text" readonly=@IsReadonly() placeholder="Napětí na panelu [V]" class="form-control form-control-sm" id="txtNapetiPanel" name="txtNapetiPanel" value=@Obj.NapetiPanel onchange=@OnNapeniPanelChanged />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-6 col-form-label col-form-label-sm" for="formfield1">Napětí na akumulátoru [V]</label>
+                                <div class="col-sm-6">
+                                    <input type="text" readonly=@IsReadonly() placeholder="Napětí na akumulátoru [V]" class="form-control form-control-sm" id="txtNapetiAku" name="txtNapetiAku" value=@Obj.NapetiAku onchange=@OnNapeniAkuChanged />
+                                </div>
+                            </div>
+                        </div>
+
+                        <br />
+
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="pull-right">
+                                <button onclick="@OnSave" class="btn btn-success">Save</button>
+                                <button onclick="@OnCancel" class="btn">Cancel</button>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </div>
+            </section>
+        </Column>
+    </Row>
+
+}
+
+@functions {
+
+    private string UserAction { get; set; }
+    private string LocalityId { get; set; }
+    private string ObjektId { get; set; }
+    private PlovakModelDto Obj { get; set; }
+
+
+    protected override void OnInit()
+    {
+        if (!session.AuthInformation.IsAuthentized)
+        {
+            uriHelper.NavigateTo("/login");
+            return;
+        }
+
+        base.OnInit();
+    }
+
+    protected override void OnParametersSet()
+    {
+        LocalityId = session.NavigateModel.LocalityId;
+        ObjektId = session.NavigateModel.ObjektId;
+        UserAction = session.NavigateModel.Action;
+
+        session.SetLocality(Convert.ToInt32(LocalityId));
+        ((PlovakService)(plovakService)).SetConnectionString();
+
+        Obj = plovakService.GetSingle(Convert.ToInt32(session.NavigateModel.PlovakId));
+        session.BackUrl = $"/plovak";
+
+        base.OnParametersSet();
+    }
+
+    void OnNapeniPanelChanged(UIChangeEventArgs changeEvent)
+    {
+        if (double.TryParse((string)changeEvent.Value, out double value))
+        {
+            Obj.NapetiPanel = value;
+        }
+        else
+        {
+            Obj.NapetiPanel = null;
+        }
+    }
+
+    void OnNapeniAkuChanged(UIChangeEventArgs changeEvent)
+    {
+        if (double.TryParse((string)changeEvent.Value, out double value))
+        {
+            Obj.NapetiAku = value;
+        }
+        else
+        {
+            Obj.NapetiAku = null;
+        }
+    }
+
+    bool IsReadonly()
+    {
+        return (UserAction != SisWeb.Services.Enums.UserActionType.New.ToString() && UserAction != SisWeb.Services.Enums.UserActionType.Edit.ToString());
+    }
+
+    void OnSave()
+    {
+        Obj.modif_u = session.AuthInformation.Username;
+        plovakService.Save(Obj);
+        GoBack();
+    }
+
+    void OnCancel()
+    {
+        GoBack();
+    }
+
+    void GoBack()
+    {
+        uriHelper.NavigateTo(session.BackUrl);
+    }
+}

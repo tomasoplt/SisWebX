@@ -1,12 +1,10 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace SisWeb.EF.Models
 {
     public partial class SISContext : Core.EF.EntityFrameworkCore.AppDbContext
     {
-        private readonly string connectionString;
+        public string ConnectionString;
 
         public SISContext()
         {
@@ -19,7 +17,7 @@ namespace SisWeb.EF.Models
 
         public SISContext(string connectionString) : base(connectionString)
         {
-            this.connectionString = connectionString;
+            this.ConnectionString = connectionString;
         }
 
         public virtual DbSet<AnalyzyOstatni> AnalyzyOstatni { get; set; }
@@ -56,9 +54,9 @@ namespace SisWeb.EF.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured || !string.IsNullOrEmpty(connectionString))
+            if (!optionsBuilder.IsConfigured || !string.IsNullOrEmpty(ConnectionString))
             {
-                optionsBuilder.UseSqlServer(connectionString);
+                optionsBuilder.UseSqlServer(ConnectionString);
             }
         }
 

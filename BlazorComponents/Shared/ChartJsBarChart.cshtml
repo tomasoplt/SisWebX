@@ -1,0 +1,26 @@
+﻿@inherits ChartBase
+@using BlazorComponents.ChartJS
+@using Microsoft.AspNetCore.Components;
+@inject ChartJSInterop chartJSInterop
+
+<div class="row">
+    <div class="container">
+        <canvas id="@Chart.CanvasId" width="@Width" height="@Height"></canvas>
+    </div>
+</div>
+@functions {
+
+    [Parameter]
+    ChartJSBarChart Chart { get; set; }
+
+    protected override void OnAfterRender()
+    {
+        chartJSInterop.InitializeBarChart(Chart);
+    }
+
+    protected override IChart GetChart()
+    {
+        return Chart;
+    }
+
+}

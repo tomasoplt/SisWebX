@@ -20,5 +20,11 @@ namespace SisWeb.Services.Dto.Sis
         }
 
         public List<ObjectModelDto> Objekty { get; set; }
+
+        public string GetConnectionString()
+        {
+            string connectionString = $"Server={DbServer}; Database={DbCatalog}; Trusted_Connection=True;";
+            return connectionString;
+        }
     }
 }

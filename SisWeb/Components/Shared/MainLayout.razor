@@ -1,6 +1,6 @@
 ﻿@inherits LayoutComponentBase
 @inject SisWeb.Services.Session.ISessionHelper session
-
+@inject IUriHelper uriHelper
 
 <body class=" ">
     <!-- START TOPBAR -->
@@ -10,16 +10,31 @@
         </div>
         <div class='quick-area'>
 
+            <div class='float-left'>
+                <ul class="info-menu right-links list-inline list-unstyled">
+                    <li class="profile list-inline-item showopacity">
+                        <a onclick="@GoBackUrl" data-toggle="dropdown" class="toggle">
+                            <img src="/assets/images/arrow-back-1.png" alt="user-image" class="rounded-circle img-inline">
+                        </a>
+                    </li>
+                    <li class="profile list-inline-item showopacity">
+                        <a href="#" data-toggle="dropdown" class="toggle">
+                            <img src="/assets/images/arrow-forward-1.png" alt="user-image" class="rounded-circle img-inline">
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
             <div class='float-right'>
                 <ul class="info-menu right-links list-inline list-unstyled">
                     <li class="profile list-inline-item showopacity">
                         <a href="#" data-toggle="dropdown" class="toggle">
-                            <img src="data/profile/profile.jpg" alt="user-image" class="rounded-circle img-inline">
-                            <span>Tomáš Oplt <i class="fa fa-angle-down"></i></span>
+                            <img src="/data/profile/profile.jpg" alt="user-image" class="rounded-circle img-inline">
+                            <span>@session.AuthInformation.FullName &nbsp;<i class="fa fa-angle-down"></i></span>
                         </a>
                         <ul class="dropdown-menu profile animated fadeIn">
                             <li class="dropdown-item">
-                                <a href="login">
+                                <a href="/login">
                                     <i class="fa fa-user"></i>
                                     Login
                                 </a>
@@ -65,16 +80,15 @@
 
                     <div class="profile-image col-4">
                         <a href="ui-profile.html">
-                            <img alt="" src="data/profile/profile.jpg" class="img-fluid rounded-circle">
+                            <img alt="" src="/data/profile/profile.jpg" class="img-fluid rounded-circle">
                         </a>
                     </div>
 
                     <div class="profile-details col-8">
                         <h3>
-                            <a href="ui-profile.html">Tomáš Oplt</a>
+                            <a href="ui-profile.html">@session.AuthInformation.FullName</a>
                             <span class="profile-status online"></span>
                         </h3>
-                        <p class="profile-title">Web Developer</p>
                     </div>
 
                 </div>
@@ -89,7 +103,7 @@
                         @foreach (var loc in session.Localities)
                         {
                             <li class="">
-                                <a href="object">
+                                <a onclick="@(e => ViewObjekt(@loc.LocalityId.ToString()))" href="#">
                                     <i class="fa fa-dashboard"></i>
                                     <span class="title">@loc.LocalityName</span>
                                 </a>
@@ -100,21 +114,17 @@
                                     {
                                         continue;
                                     }
+
                                     <ul class="sub-menu" style="display:block;">
                                         <li>
-                                            <a class="" href="object">
+                                            <a class="" onclick="@(e => ViewObjekt(@loc.LocalityId.ToString()))" href="#">
                                                 @obj.objekt
                                             </a>
-
-                                            @foreach (var plovak in obj.Plovaky)
-                                            {
-                                                <ul class="sub-menu" style="display:block;">
-                                                    <li>
-                                                        <a class="" href="fetchdata">@("Plovák " + plovak.PlovakId) </a>
-                                                    </li>
-                                                </ul>
-                                            }
-
+                                            <ul class="sub-menu" style="display:block;">
+                                                <li>
+                                                    <a class="" href="#" onclick="@(e => ViewPlovak(@loc.LocalityId.ToString(), obj.objekt_id.ToString() ))">@("Plováky")</a>
+                                                </li>
+                                            </ul>
                                         </li>
                                     </ul>
                                 }
@@ -143,3 +153,32 @@
         </div>
     </div>
 </body>
+
+
+
+@functions {
+
+    void GoBackUrl()
+    {
+        if (!string.IsNullOrEmpty(session.BackUrl))
+        {
+            uriHelper.NavigateTo(session.BackUrl);
+        }
+    }
+
+    void ViewObjekt(string localityId)
+    {
+        session.NavigateModel.Action = "View";
+        session.NavigateModel.LocalityId = localityId;
+        session.NavigateModel.ObjektId = "";
+        uriHelper.NavigateTo("/objekt");
+    }
+
+    void ViewPlovak(string localityId, string objektId)
+    {
+        session.NavigateModel.Action = "View";
+        session.NavigateModel.LocalityId = localityId;
+        session.NavigateModel.ObjektId = objektId;
+        uriHelper.NavigateTo("/plovak");
+    }
+}

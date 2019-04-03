@@ -3,9 +3,9 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <OutputType>Library</OutputType>
+    <LangVersion>7.3</LangVersion>
     <IsPackable>true</IsPackable>
     <BlazorLinkOnBuild>false</BlazorLinkOnBuild>
-    <LangVersion>7.3</LangVersion>
     <PackageId>BlazorGrid</PackageId>
     <Authors>Ankit Sharma</Authors>
     <Product>BlazorGrid</Product>
