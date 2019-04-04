@@ -87,6 +87,7 @@ namespace SisWeb.Services.Authentication
             var localLocality = list.FirstOrDefault(x => x.Url == _sessionHelper.BaseUri);
             if ( localLocality != null)
             {
+                localLocality.IsLocal = true;
                 try
                 {
                     ObjectService objectService = _objectService as ObjectService;

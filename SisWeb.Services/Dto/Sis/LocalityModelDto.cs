@@ -13,6 +13,7 @@ namespace SisWeb.Services.Dto.Sis
         public string DbCatalog { get; set; }
         public string DbUsername { get; set; }
         public string DbPassword { get; set; }
+        public bool IsLocal { get; set; } = false;
 
         public LocalityModelDto()
         {

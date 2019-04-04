@@ -1,4 +1,9 @@
-﻿.jsgrid-grid-header {
+﻿.disabled {
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.jsgrid-grid-header {
     text-align: center;
     border-collapse: collapse;
     background: #ebebeb;

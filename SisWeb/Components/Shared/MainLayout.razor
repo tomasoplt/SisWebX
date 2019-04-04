@@ -102,8 +102,8 @@
                     {
                         @foreach (var loc in session.Localities)
                         {
-                            <li class="">
-                                <a onclick="@(e => ViewObjekt(@loc.LocalityId.ToString()))" href="#">
+                            <li class="@IsDisabled(loc)">
+                                <a onclick="@(e => ViewObjekt(@loc))" href="#" class="">
                                     <i class="fa fa-dashboard"></i>
                                     <span class="title">@loc.LocalityName</span>
                                 </a>
@@ -117,7 +117,7 @@
 
                                     <ul class="sub-menu" style="display:block;">
                                         <li>
-                                            <a class="" onclick="@(e => ViewObjekt(@loc.LocalityId.ToString()))" href="#">
+                                            <a class="" onclick="@(e => ViewObjekt(@loc))" href="#">
                                                 @obj.objekt
                                             </a>
                                             <ul class="sub-menu" style="display:block;">
@@ -158,6 +158,14 @@
 
 @functions {
 
+    string IsDisabled(SisWeb.Services.Dto.Sis.LocalityModelDto model)
+    {
+        if (!model.IsLocal)
+            return "disabled";
+
+        return "";
+    }
+
     void GoBackUrl()
     {
         if (!string.IsNullOrEmpty(session.BackUrl))
@@ -166,10 +174,13 @@
         }
     }
 
-    void ViewObjekt(string localityId)
+    void ViewObjekt(SisWeb.Services.Dto.Sis.LocalityModelDto model)
     {
+        if (!model.IsLocal)
+            return;
+
         session.NavigateModel.Action = "View";
-        session.NavigateModel.LocalityId = localityId;
+        session.NavigateModel.LocalityId = model.LocalityId.ToString();
         session.NavigateModel.ObjektId = "";
         uriHelper.NavigateTo("/objekt");
     }

@@ -1,4 +1,7 @@
 ﻿using ChartJs.Blazor.ChartJS.Common;
+using ChartJs.Blazor.ChartJS.Common.Legends;
+using ChartJs.Blazor.ChartJS.Common.Legends.OnClickHandler;
+using ChartJs.Blazor.ChartJS.Common.Legends.OnHover;
 using ChartJs.Blazor.ChartJS.LineChart;
 using ChartJs.Blazor.Util.Color;
 using SisWeb.Services.Dto.Sis;
@@ -44,7 +47,7 @@ namespace SisWeb.Graphs
                         yAxes = new List<Axis>
                         {
                             new Axis
-                            {
+                            { 
                                 ScaleLabel = new ScaleLabel
                                 {
                                     LabelString = "Napětí"

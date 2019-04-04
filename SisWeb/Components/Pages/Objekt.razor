@@ -3,6 +3,8 @@
 @inject IUriHelper uriHelper
 @inject SisWeb.Services.Session.ISessionHelper session
 @inject SisWeb.Services.SisCore.IObjectService objectService
+@inject ILogger<Objekt> logger
+
 @using SisWeb.Services.Dto.Sis
 @using Kendo.Blazor.Components.Grid
 @using SisWeb.Services.SisCore;
@@ -47,7 +49,7 @@ else
 
                     <KendoGridCommandColumn>
                         <KendoGridCommandButton Command="View" Icon="edit" OnClick="TriggerView">Náhled</KendoGridCommandButton>
-                        <KendoGridCommandButton Command="View" Icon="edit" OnClick="TriggerEdit">Upravit</KendoGridCommandButton>
+                        <KendoGridCommandButton Command="Edit" Icon="edit" OnClick="TriggerEdit">Upravit</KendoGridCommandButton>
                         <KendoGridCommandButton Command="Delete" Icon="delete" OnClick="TriggerRemove">Odstranit</KendoGridCommandButton>
                         <KendoGridCommandButton Command="Plovak" Icon="edit" OnClick="TriggerPlovak">Plovák</KendoGridCommandButton>
                     </KendoGridCommandColumn>
@@ -81,10 +83,17 @@ else
 
     protected override void OnParametersSet()
     {
-        LocalityId = session.NavigateModel.LocalityId;
-        session.SetLocality(Convert.ToInt32(LocalityId));
-        ((ObjectService)(objectService)).SetConnectionString();
-        objects = objectService.GetObjects(false);
+        try
+        {
+            LocalityId = session.NavigateModel.LocalityId;
+            session.SetLocality(Convert.ToInt32(LocalityId));
+            ((ObjectService)(objectService)).SetConnectionString();
+            objects = objectService.GetObjects(false);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError("OnParametersSet", ex);
+        }
 
         base.OnParametersSet();
     }
@@ -106,7 +115,7 @@ else
         StateHasChanged();
     }
 
-    
+
     void OnNazevObjektuChanged(UIChangeEventArgs changeEvent)
     {
         nazevObjektu = (string)changeEvent.Value;
@@ -123,21 +132,23 @@ else
     void TriggerView(GridCommandEventArgs args)
     {
         var item = (args.Item as ObjectModelDto);
-        TriggerView("View", item);
-        
+        TriggerObjectDetail("View", item);
+
     }
+
     void TriggerEdit(GridCommandEventArgs args)
     {
         var item = (args.Item as ObjectModelDto);
-        TriggerView("Edit", item);
+        TriggerObjectDetail("Edit", item);
     }
+
     void TriggerRemove(GridCommandEventArgs args)
     {
         var item = (args.Item as ObjectModelDto);
-        TriggerView("Remove", item);
+        TriggerObjectDetail("Remove", item);
     }
 
-    void TriggerView(string action, ObjectModelDto item)
+    void TriggerObjectDetail(string action, ObjectModelDto item)
     {
         session.NavigateModel.LocalityId = session.LocalityId.ToString();
         session.NavigateModel.ObjektId = item.objekt_id.Value.ToString();

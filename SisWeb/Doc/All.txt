@@ -3,11 +3,7 @@ https://drive.google.com/drive/folders/1DZDYsKB-MWu4aR-D9Pp837Bb8KHLMJn5
 Blazorise: https://blazorise.com/docs/
 
 Todo:
-uzel disabled - po najeti chyba text 
 Deploy na IIS 
-Nacteni objektu na novem serveru nejde - report chyby
-config
-
 
 Melo by byt sptravne takto
 <p class="age">
