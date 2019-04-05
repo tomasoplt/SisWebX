@@ -18,7 +18,8 @@
 }
 else
 {
-    @*<input type="text" value="@objects.Count()" />*@
+    <ConfirmDialog IsPopupOpen="@isPopupOpen" Animation="ConfirmDialog.AnimationType.FadeIn" ActionMethod="@RemoveObject" Descr ="@removeQuestion" Title="Opravdu chcete odstranit záznam?" />
+    isPopupOpen = false;
 
     <div class="form-row align-items-center">
         <div class="col-auto">
@@ -65,7 +66,9 @@ else
 @functions {
 
     private string LocalityId { get; set; }
-    bool isPopupOpen;
+    bool isPopupOpen = false;
+    string removeQuestion = "";
+    int removeId = 0;
     List<ObjectModelDto> objects;
     private List<PlovakModelDto> plovaks;
     private string nazevObjektu;
@@ -145,7 +148,11 @@ else
     void TriggerRemove(GridCommandEventArgs args)
     {
         var item = (args.Item as ObjectModelDto);
-        TriggerObjectDetail("Remove", item);
+
+        isPopupOpen = true;
+        removeId = item.objekt_id.Value;
+        removeQuestion = $"Opravdu chcete odstranit: {item.objekt} ?";
+        StateHasChanged();
     }
 
     void TriggerObjectDetail(string action, ObjectModelDto item)
@@ -164,6 +171,15 @@ else
         session.NavigateModel.Action = "View";
 
         uriHelper.NavigateTo($"/plovak");
+    }
+
+    void RemoveObject()
+    {
+        var obj = objectService.GetObject(removeId);
+        obj.delete_u = session.AuthInformation.Username;
+        obj.delete_d = DateTime.Now;
+        objectService.SaveObject(obj);
+        OnSearch();
     }
 
     void OnDropDownClickPlovak()

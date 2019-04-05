@@ -50,10 +50,16 @@ namespace SisWeb.Services.SisCore
                 dbObj.Reference = obj.reference;
                 dbObj.Poznamka = obj.poznamka;
 
-                dbObj.ModifD = DateTime.Now;
-                dbObj.Reftime = dbObj.ModifD;
+                dbObj.NewD = obj.new_d;
                 dbObj.NewU = obj.new_u;
+
+                dbObj.ModifD = obj.modif_d;
                 dbObj.ModifU = obj.modif_u;
+
+                dbObj.DeleteU = obj.delete_u;
+                dbObj.DeleteD = obj.delete_d;
+
+                dbObj.Reftime = dbObj.ModifD;
 
                 if (obj.objekt_id == null)
                 {
@@ -89,7 +95,14 @@ namespace SisWeb.Services.SisCore
                     z_gps = b.ZGps,
                     technologie = b.Technologie,
                     reference = b.Reference,
-                    poznamka = b.Poznamka
+                    poznamka = b.Poznamka,
+                    new_d = b.NewD,
+                    new_u = b.NewU,
+                    modif_d = b.ModifD,
+                    modif_u = b.ModifU,
+                    delete_d = b.DeleteD,
+                    delete_u = b.DeleteU
+
                 }).SingleOrDefault();
 
             return obj;
@@ -98,7 +111,7 @@ namespace SisWeb.Services.SisCore
 
         private IEnumerable<ObjectModelDto> GetObjectsInternal()
         {
-            return _context.Objekty.AsNoTracking().Include(x => x.Mrak).OrderBy(x => x.Objekt).Select(b =>
+            return _context.Objekty.AsNoTracking().Include(x => x.Mrak).Where(x=>x.DeleteD == null).OrderBy(x => x.Objekt).Select(b =>
             new ObjectModelDto()
             {
                 objekt_id = b.ObjektId,
@@ -115,7 +128,13 @@ namespace SisWeb.Services.SisCore
                 z_gps = b.ZGps,
                 technologie = b.Technologie,
                 reference = b.Reference,
-                poznamka = b.Poznamka
+                poznamka = b.Poznamka,
+                new_d = b.NewD,
+                new_u = b.NewU,
+                modif_d = b.ModifD,
+                modif_u = b.ModifU,
+                delete_d = b.DeleteD,
+                delete_u = b.DeleteU
             });
         }
 

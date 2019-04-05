@@ -38,9 +38,17 @@ namespace SisWeb.Services.SisCore
                 //dbObj.Mereno = obj.Mereno;
                 //dbObj.Poznamka = obj.Poznamka;
 
-                dbObj.ModifD = DateTime.Now;
-                dbObj.Reftime = dbObj.ModifD;
+                dbObj.NewD = obj.new_d;
+                dbObj.NewU = obj.new_u;
+
+                dbObj.ModifD = obj.modif_d;
                 dbObj.ModifU = obj.modif_u;
+
+                dbObj.DeleteU = obj.delete_u;
+                dbObj.DeleteD = obj.delete_d;
+
+                dbObj.Reftime = dbObj.ModifD;
+                
 
                 _context.SaveChanges();
             }
@@ -61,7 +69,13 @@ namespace SisWeb.Services.SisCore
                     NapetiAku = b.NapetiAku,
                     NapetiPanel = b.NapetiPanel,
                     Mereno = b.Mereno,
-                    Poznamka = b.Poznamka
+                    Poznamka = b.Poznamka,
+                    new_d = b.NewD,
+                    new_u = b.NewU,
+                    modif_d = b.ModifD,
+                    modif_u = b.ModifU,
+                    delete_d = b.DeleteD,
+                    delete_u = b.DeleteU
                 }).SingleOrDefault();
 
             return obj;
@@ -69,7 +83,9 @@ namespace SisWeb.Services.SisCore
 
         public List<PlovakModelDto> GetPlovaky(int objekt_id)
         {
-            List<PlovakModelDto>  plovaky = _context.Plovaky.AsNoTracking().OrderByDescending(x => x.Mereno).Select(b =>
+            List<PlovakModelDto>  plovaky = _context.Plovaky.AsNoTracking()
+                .Where(x => x.DeleteD == null)
+                .OrderByDescending(x => x.Mereno).Select(b =>
                 new PlovakModelDto()
                 {
                     PlovakId = b.PlovakId,
@@ -77,7 +93,13 @@ namespace SisWeb.Services.SisCore
                     NapetiAku = b.NapetiAku,
                     NapetiPanel = b.NapetiPanel,
                     Mereno = b.Mereno,
-                    Poznamka = b.Poznamka
+                    Poznamka = b.Poznamka,
+                    new_d = b.NewD,
+                    new_u = b.NewU,
+                    modif_d = b.ModifD,
+                    modif_u = b.ModifU,
+                    delete_d = b.DeleteD,
+                    delete_u = b.DeleteU
                 }).ToList();
 
             return plovaky;

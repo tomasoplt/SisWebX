@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SisWeb.Services.Dto.Sis
 {
@@ -13,6 +14,11 @@ namespace SisWeb.Services.Dto.Sis
 
         public string new_u { get; set; }
         public string modif_u { get; set; }
+        public string delete_u { get; set; }
+
+        public DateTime? new_d { get; set; }
+        public DateTime? modif_d { get; set; }
+        public DateTime? delete_d { get; set; }
 
         public double? x { get; set; }
         public double? y { get; set; }

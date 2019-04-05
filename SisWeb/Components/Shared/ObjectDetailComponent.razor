@@ -302,10 +302,12 @@
         if (UserAction == "New")
         {
             Obj.new_u = session.AuthInformation.Username;
+            Obj.new_d = DateTime.Now;
         }
         else
         {
             Obj.modif_u = session.AuthInformation.Username;
+            Obj.modif_d = DateTime.Now;
         }
         objectService.SaveObject(Obj);
         uriHelper.NavigateTo("/objekt");

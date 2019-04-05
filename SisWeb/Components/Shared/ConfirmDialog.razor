@@ -33,24 +33,15 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group has-danger">
-                                    <label class="col-form-label">Demo Text</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group has-danger">
-                                    <label class="col-form-label">Description</label>
+                                    <label class="col-form-label">@Descr</label>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" onclick="@Save">Save</button>
+                    <button type="button" class="btn btn-primary" onclick="@Confirm">OK</button>
                     <button type="button" class="btn btn-secondary" onclick="@Close">Cancel</button>
                 </div>
 
@@ -74,7 +65,13 @@
     }
 
     [Parameter]
+    Action ActionMethod { get; set; }
+
+    [Parameter]
     string Title { get; set; }
+
+    [Parameter]
+    string Descr { get; set; }
 
     [Parameter]
     private AnimationType Animation { get; set; }
@@ -117,11 +114,9 @@
         IsPopupOpen = false;
     }
 
-    void Save()
+    void Confirm()
     {
-        // you can add some code for validation and saving the modifications here...
-        // ....
-        // Close the popup
         IsPopupOpen = false;
+        ActionMethod.Invoke();
     }
 }

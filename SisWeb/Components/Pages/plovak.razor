@@ -19,36 +19,39 @@
 }
 else
 {
+    <ConfirmDialog IsPopupOpen="@isPopupOpen" Animation="ConfirmDialog.AnimationType.FadeIn" ActionMethod="@RemoveObject" Descr="@removeQuestion" Title="Opravdu chcete odstranit záznam?" />
+    isPopupOpen = false;
+
     <Row>
         <Column>
             <button class="btn btn-primary" onclick="@UpdateChart">Obnov graf</button>
         </Column>
     </Row>
 
-        <ChartJsLineChart ref="lineChartJs"
-                          Config="@lineChartConfig"
-                          Width="600"
-                          Height="200" />
+    <ChartJsLineChart ref="lineChartJs"
+                      Config="@lineChartConfig"
+                      Width="600"
+                      Height="200" />
 
-        <br />
+    <br />
 
-        <KendoGrid Data=@plovaks Pageable=true PageSize=20 Sortable=true>
+    <KendoGrid Data=@plovaks Pageable=true PageSize=20 Sortable=true>
 
-            <KendoGridColumns>
-                <KendoGridColumn Title="Měřeno" Field=@nameof(PlovakModelDto.Mereno) />
-                <KendoGridColumn Title="Napětí panel" Field=@nameof(PlovakModelDto.NapetiPanel) />
-                <KendoGridColumn Title="Napětí Aku" Field=@nameof(PlovakModelDto.NapetiAku) />
-                <KendoGridColumn Title="Poznámka" Field=@nameof(PlovakModelDto.Poznamka) />
+        <KendoGridColumns>
+            <KendoGridColumn Title="Měřeno" Field=@nameof(PlovakModelDto.Mereno) />
+            <KendoGridColumn Title="Napětí panel" Field=@nameof(PlovakModelDto.NapetiPanel) />
+            <KendoGridColumn Title="Napětí Aku" Field=@nameof(PlovakModelDto.NapetiAku) />
+            <KendoGridColumn Title="Poznámka" Field=@nameof(PlovakModelDto.Poznamka) />
 
-                <KendoGridCommandColumn>
-                    <KendoGridCommandButton Command="View" Icon="edit" OnClick="TriggerView">Náhled</KendoGridCommandButton>
-                    <KendoGridCommandButton Command="Edit" Icon="edit" OnClick="TriggerEdit">Upravit</KendoGridCommandButton>
-                    <KendoGridCommandButton Command="Delete" Icon="delete" OnClick="TriggerRemove">Odstranit</KendoGridCommandButton>
-                </KendoGridCommandColumn>
-            </KendoGridColumns>
+            <KendoGridCommandColumn>
+                <KendoGridCommandButton Command="View" Icon="edit" OnClick="TriggerView">Náhled</KendoGridCommandButton>
+                <KendoGridCommandButton Command="Edit" Icon="edit" OnClick="TriggerEdit">Upravit</KendoGridCommandButton>
+                <KendoGridCommandButton Command="Delete" Icon="delete" OnClick="TriggerRemove">Odstranit</KendoGridCommandButton>
+            </KendoGridCommandColumn>
+        </KendoGridColumns>
 
-        </KendoGrid>
-    }
+    </KendoGrid>
+}
 
 @functions {
 
@@ -61,6 +64,9 @@ else
     public LineChartConfig lineChartConfig { get; set; }
     ChartJsLineChart lineChartJs;
 
+    bool isPopupOpen = false;
+    string removeQuestion = "";
+    int removeId = 0;
 
     protected override void OnInit()
     {
@@ -77,8 +83,19 @@ else
         session.SetLocality(Convert.ToInt32(LocalityId));
         ((PlovakService)(plovakService)).SetConnectionString();
 
-        plovaks = plovakService.GetPlovaky(Convert.ToInt32(ObjektId));
+        plovaks = new List<PlovakModelDto>();
         session.BackUrl = $"/objekt/{LocalityId.ToString()}";
+
+        LoadData();
+
+        base.OnInit();
+    }
+
+    void LoadData()
+    {
+        var data = plovakService.GetPlovaky(Convert.ToInt32(ObjektId));
+        plovaks.Clear();
+        plovaks.AddRange(data);
 
         var graphSection = configuration.GetSection("Graph");
         var settingsSection = graphSection.GetSection("Settings");
@@ -86,9 +103,6 @@ else
 
         var lineChartSvc = new LineChartService();
         lineChartConfig = lineChartSvc.GetConfiguration("Plováky", plovaks.Take(maxRecords).ToList());
-
-
-        base.OnInit();
     }
 
     string DataStr
@@ -109,22 +123,12 @@ else
 
     private void UpdateChart()
     {
-        //Update existing dataset
-        var rand = new Random();
-        lineChartConfig.Data.Labels.Add($"New{DateTime.Now.Second}");
-        var newVal = rand.Next(lineChartConfig.Data.Datasets.SelectMany(dataset => dataset.Data).Select(Convert.ToInt32).Max());
-        newVal -= 4;
-        lineChartConfig.Data.Datasets.ForEach(dataset =>
-        {
-            dataset.Data.Add(newVal);
-            newVal += rand.Next(4);
-        });
+        LoadData();
+        StateHasChanged();
     }
 
     protected override void OnParametersSet()
     {
-
-
         base.OnParametersSet();
     }
 
@@ -140,15 +144,34 @@ else
         var item = (args.Item as PlovakModelDto);
         ViewDetail("View", item.PlovakId.Value);
     }
+
     void TriggerEdit(GridCommandEventArgs args)
     {
         var item = (args.Item as PlovakModelDto);
         ViewDetail("Edit", item.PlovakId.Value);
     }
+
     void TriggerRemove(GridCommandEventArgs args)
     {
         var item = (args.Item as PlovakModelDto);
-        ViewDetail("Remove", item.PlovakId.Value);
+
+        isPopupOpen = true;
+        removeId = item.PlovakId.Value;
+        if ( item.Mereno != null)
+            removeQuestion = $"Opravdu chcete odstranit: {item.Mereno.Value.ToString("dd.MM.yyyy HH:mm:ss")} ?";
+        else
+            removeQuestion = $"Opravdu chcete položku : {item.PlovakId} ?";
+
+        StateHasChanged();
     }
 
+    void RemoveObject()
+    {
+        var obj = plovakService.GetSingle(removeId);
+        obj.delete_u = session.AuthInformation.Username;
+        obj.delete_d = DateTime.Now;
+        plovakService.Save(obj);
+        LoadData();
+        StateHasChanged();
+    }
 }
