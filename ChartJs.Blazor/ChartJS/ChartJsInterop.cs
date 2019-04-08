@@ -9,6 +9,19 @@ namespace ChartJs.Blazor.ChartJS
 {
     public static class ChartJsInterop
     {
+        public static Task<string> Resize(this IJSRuntime jsRuntime)
+        {
+            try
+            {
+                return jsRuntime.InvokeAsync<string>("Resizer.Resize");
+            }
+            catch (Exception exp)
+            {
+
+            }
+            return Task.FromResult<string>("");
+        }
+
         public static Task<bool> SetupChart(this IJSRuntime jsRuntime, ChartConfigBase chartConfig)
         {
             try

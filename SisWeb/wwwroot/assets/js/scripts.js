@@ -3396,19 +3396,8 @@ var table5 = $('#example-5').DataTable();
                 highlightLineColor: '#673AB7',
                 spotRadius: 3,
             });
-
-
-
         }
-
     };
-
-
-
-
-
-
-
 
     // Element Attribute Helper
     function getValue($el, data_var, default_val) {
@@ -3457,6 +3446,13 @@ var table5 = $('#example-5').DataTable();
         CMPLTADMIN_SETTINGS.ios7Switchery();
        
     });
+
+    window.Resizer = {
+        Resize: function () {
+            CMPLTADMIN_SETTINGS.windowBasedLayout();
+            return "";
+        }
+    };
 
     $(window).resize(function() {
         CMPLTADMIN_SETTINGS.windowBasedLayout();

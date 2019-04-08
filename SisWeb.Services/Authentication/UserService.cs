@@ -1,4 +1,5 @@
 ﻿using Core.Services.Application;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SisWeb.EF.Models;
 using SisWeb.Services.Dto.Authentication;
@@ -22,12 +23,14 @@ namespace SisWeb.Services.Authentication
     {
         private ISessionHelper _sessionHelper;
         private IObjectService _objectService;
+        private IConfiguration _configuration;
         private readonly ILogger _log;
 
-        public UserService(ISessionHelper sessionHelper, IObjectService objectService, ILogger<UserService> log)
+        public UserService(ISessionHelper sessionHelper, IObjectService objectService, ILogger<UserService> log, IConfiguration configuration)
         {
             _sessionHelper = sessionHelper;
             _objectService = objectService;
+            _configuration = configuration;
             _log = log;
         }
 
@@ -107,11 +110,22 @@ namespace SisWeb.Services.Authentication
 
         private void SetClientProperties(SisWebService.BaseDataClient client)
         {
+            string webServiceAddress = GetWebServiceAddr();
             ServicePointManager.ServerCertificateValidationCallback += RemoteCertificateValidate;
-            EndpointAddress Address = new EndpointAddress("http://siscommonwstest.geosis.cz/BaseData.svc");
+            EndpointAddress Address = new EndpointAddress(webServiceAddress);
             client.Endpoint.Address = Address;
+
             //client.ClientCredentials.UserName.UserName = login;
             //client.ClientCredentials.UserName.Password = password;
+        }
+
+        private string GetWebServiceAddr()
+        {
+            var graphSection = _configuration.GetSection("WebService");
+            var settingsSection = graphSection.GetSection("Settings");
+            string addr = settingsSection.GetValue<string>("Address");
+
+            return addr;
         }
 
         /// <summary>

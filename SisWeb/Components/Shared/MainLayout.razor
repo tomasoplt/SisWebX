@@ -96,7 +96,7 @@
                 @*Left menu  --------  Left menu *@
                 @*Left menu  --------  Left menu *@
 
-                <ul class='wraplist'>
+                <ul class='wraplist' style="height: auto;">
 
                     @if (session.Localities != null)
                     {
@@ -110,11 +110,6 @@
 
                                 @foreach (var obj in loc.Objekty)
                                 {
-                                    if (obj.Plovaky.Count == 0)
-                                    {
-                                        continue;
-                                    }
-
                                     <ul class="sub-menu" style="display:block;">
                                         <li>
                                             <a class="" onclick="@(e => ViewObjekt(@loc))" href="#">
