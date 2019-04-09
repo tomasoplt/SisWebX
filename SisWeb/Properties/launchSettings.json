@@ -16,11 +16,12 @@
       }
     },
     "SisWeb": {
-      "commandName": "Project",
+      "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
+      "ancmHostingModel": "InProcess",
       "applicationUrl": "http://localhost:5000"
     }
   }

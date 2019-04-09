@@ -40,19 +40,19 @@
                                 </a>
                             </li>
                             <li class="dropdown-item">
-                                <a href="#settings">
+                                <a href="#">
                                     <i class="fa fa-wrench"></i>
                                     Settings
                                 </a>
                             </li>
                             <li class="dropdown-item">
-                                <a href="#help">
+                                <a href="#">
                                     <i class="fa fa-info"></i>
                                     Help
                                 </a>
                             </li>
-                            <li class="last dropdown-item">
-                                <a href="ui-login.html">
+                            <li class="dropdown-item">
+                                <a onclick="@Logout">
                                     <i class="fa fa-lock"></i>
                                     Logout
                                 </a>
@@ -115,11 +115,16 @@
                                             <a class="" onclick="@(e => ViewObjekt(@loc))" href="#">
                                                 @obj.objekt
                                             </a>
-                                            <ul class="sub-menu" style="display:block;">
-                                                <li>
-                                                    <a class="" href="#" onclick="@(e => ViewPlovak(@loc.LocalityId.ToString(), obj.objekt_id.ToString() ))">@("Plováky")</a>
-                                                </li>
-                                            </ul>
+
+                                            @if (obj.Plovaky.Count != 0)
+                                            {
+                                                <ul class="sub-menu" style="display:block;">
+                                                    <li>
+                                                        <a class="" href="#" onclick="@(e => ViewPlovak(@loc.LocalityId.ToString(), obj.objekt_id.ToString() ))">@("Plovák")</a>
+                                                    </li>
+                                                </ul>
+                                            }
+                                            
                                         </li>
                                     </ul>
                                 }
@@ -167,6 +172,12 @@
         {
             uriHelper.NavigateTo(session.BackUrl);
         }
+    }
+
+    void Logout()
+    {
+        session.Clear();
+        uriHelper.NavigateTo("/");
     }
 
     void ViewObjekt(SisWeb.Services.Dto.Sis.LocalityModelDto model)

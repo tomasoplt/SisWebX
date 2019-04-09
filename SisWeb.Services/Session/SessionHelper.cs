@@ -10,8 +10,7 @@ namespace SisWeb.Services.Session
     {
         public SessionHelper()
         {
-            AuthInformation = new AuthResultDto();
-            NavigateModel = new NavigateModelDto();
+            Clear();
         }
 
         public string Language { get; set; }
@@ -31,6 +30,13 @@ namespace SisWeb.Services.Session
         public string GetLocalityConnectionString()
         {
             return Localities.SingleOrDefault(x => x.LocalityId == LocalityId).GetConnectionString();
+        }
+
+        public void Clear()
+        {
+            AuthInformation = new AuthResultDto();
+            NavigateModel = new NavigateModelDto();
+            Localities = new List<LocalityModelDto>();
         }
     }
 }

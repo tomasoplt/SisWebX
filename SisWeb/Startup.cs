@@ -12,6 +12,7 @@ using Core.Services.Domain.Repositories;
 using SisWeb.Components;
 using SisWeb.EF.Models;
 using SisWeb.Services;
+using System;
 
 namespace SisWeb
 {
@@ -38,6 +39,12 @@ namespace SisWeb
             services.AddApplicationServices();
             services.AddKendoBlazor();
             services.AddRazorComponents();
+
+            services.AddSession(options =>
+            {
+                options.Cookie.Name = ".SisWeb.Session";
+                options.IdleTimeout = TimeSpan.FromMinutes(10);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,6 +61,7 @@ namespace SisWeb
             }
 
             app.UseStaticFiles();
+            app.UseSession();
 
             app.UseRouting(routes =>
             {

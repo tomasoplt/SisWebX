@@ -144,7 +144,7 @@
 
                         <div class="col-md-12 col-sm-12 col-xs-12">
                             <div class="pull-right">
-                                <button readonly=@IsReadonly() onclick="@OnSave" class="btn btn-success">Save</button>
+                                <button disabled=@IsReadonly() onclick="@OnSave" class="btn btn-success">Save</button>
                                 <button onclick="@OnCancel" class="btn">Cancel</button>
                             </div>
                         </div>

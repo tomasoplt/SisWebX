@@ -72,8 +72,9 @@ else
     List<ObjectModelDto> objects;
     private List<PlovakModelDto> plovaks;
     private string nazevObjektu;
+    
 
-    protected override void OnInit()
+     protected override async Task OnInitAsync()
     {
         if (!session.AuthInformation.IsAuthentized)
         {

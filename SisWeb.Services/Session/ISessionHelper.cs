@@ -18,5 +18,6 @@ namespace SisWeb.Services.Session
         List<LocalityModelDto> Localities { get; set; }
         string GetLocalityConnectionString();
         void SetLocality(int localityId);
+        void Clear();
     }
 }

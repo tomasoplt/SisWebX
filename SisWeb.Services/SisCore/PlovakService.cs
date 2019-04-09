@@ -84,7 +84,7 @@ namespace SisWeb.Services.SisCore
         public List<PlovakModelDto> GetPlovaky(int objekt_id)
         {
             List<PlovakModelDto>  plovaky = _context.Plovaky.AsNoTracking()
-                .Where(x => x.DeleteD == null)
+                .Where(x => x.ObjektId == objekt_id && x.DeleteD == null)
                 .OrderByDescending(x => x.Mereno).Select(b =>
                 new PlovakModelDto()
                 {
