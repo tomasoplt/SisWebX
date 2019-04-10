@@ -22,7 +22,9 @@ namespace ChartJs.Blazor.Charts
                 base.OnAfterRender();
                 JsRuntime.SetupChart(Config);
             }
-            catch { } // https://github.com/aspnet/AspNetCore/issues/8327
+            catch
+            {
+            } // https://github.com/aspnet/AspNetCore/issues/8327
         }
 
         public void Update()

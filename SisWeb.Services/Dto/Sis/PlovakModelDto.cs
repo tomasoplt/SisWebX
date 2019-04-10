@@ -7,6 +7,13 @@ namespace SisWeb.Services.Dto.Sis
         public int? PlovakId { get; set; }
         public int? objekt_id { get; set; }
         public DateTime? Mereno { get; set; }
+        public string Merenos {
+            get
+            {
+                if (Mereno == null) return "";
+                return Mereno.Value.ToString("dd.MM.yyyy HH:mm:ss");
+            }
+        }
         public double? NapetiPanel { get; set; }
         public double? NapetiAku { get; set; }
         public string Poznamka { get; set; }

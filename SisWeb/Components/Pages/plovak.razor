@@ -38,10 +38,11 @@ else
     <KendoGrid Data=@plovaks Pageable=true PageSize=20 Sortable=true>
 
         <KendoGridColumns>
-            <KendoGridColumn Title="Měřeno" Field=@nameof(PlovakModelDto.Mereno) />
+            <KendoGridColumn Title="Měřeno" Field=@nameof(PlovakModelDto.Merenos) />
             <KendoGridColumn Title="Napětí panel" Field=@nameof(PlovakModelDto.NapetiPanel) />
             <KendoGridColumn Title="Napětí Aku" Field=@nameof(PlovakModelDto.NapetiAku) />
             <KendoGridColumn Title="Poznámka" Field=@nameof(PlovakModelDto.Poznamka) />
+
 
             <KendoGridCommandColumn>
                 <KendoGridCommandButton Command="View" Icon="edit" OnClick="TriggerView">Náhled</KendoGridCommandButton>
@@ -122,15 +123,26 @@ else
         lineChartJs.Update();
     }
 
-    private void UpdateChart()
+    void OnSearch()
     {
         LoadData();
         StateHasChanged();
     }
 
-    protected override void OnParametersSet()
+    void UpdateChart()
     {
-        base.OnParametersSet();
+        LoadData();
+        StateHasChanged();
+    }
+
+    void RemoveObject()
+    {
+        var obj = plovakService.GetSingle(removeId);
+        obj.delete_u = session.AuthInformation.Username;
+        obj.delete_d = DateTime.Now;
+        plovakService.Save(obj);
+        LoadData();
+        StateHasChanged();
     }
 
     void ViewDetail(string action, int id)
@@ -166,13 +178,4 @@ else
         StateHasChanged();
     }
 
-    void RemoveObject()
-    {
-        var obj = plovakService.GetSingle(removeId);
-        obj.delete_u = session.AuthInformation.Username;
-        obj.delete_d = DateTime.Now;
-        plovakService.Save(obj);
-        LoadData();
-        StateHasChanged();
-    }
 }

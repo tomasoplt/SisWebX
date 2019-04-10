@@ -49,10 +49,10 @@ else
                     <KendoGridColumn Title="Oblast" Field=@nameof(ObjectModelDto.oblast) />
 
                     <KendoGridCommandColumn>
-                        <KendoGridCommandButton Command="View" Icon="edit" OnClick="TriggerView">Náhled</KendoGridCommandButton>
-                        <KendoGridCommandButton Command="Edit" Icon="edit" OnClick="TriggerEdit">Upravit</KendoGridCommandButton>
-                        <KendoGridCommandButton Command="Delete" Icon="delete" OnClick="TriggerRemove">Odstranit</KendoGridCommandButton>
-                        <KendoGridCommandButton Command="Plovak" Icon="edit" OnClick="TriggerPlovak">Plovák</KendoGridCommandButton>
+                        <KendoGridCommandButton Command="View" Icon="edit" OnClick="@TriggerView">Náhled</KendoGridCommandButton>
+                        <KendoGridCommandButton Command="Edit" Icon="edit" OnClick="@TriggerEdit">Upravit</KendoGridCommandButton>
+                        <KendoGridCommandButton Command="Delete" Icon="delete" OnClick="@TriggerRemove">Odstranit</KendoGridCommandButton>
+                        <KendoGridCommandButton Command="Plovak" Icon="edit" OnClick="@TriggerPlovak">Plovák</KendoGridCommandButton>
                     </KendoGridCommandColumn>
 
 
