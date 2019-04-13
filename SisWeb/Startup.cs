@@ -37,9 +37,9 @@ namespace SisWeb
             services.AddFontAwesomeIcons();
             services.AddTransient(typeof(IRepository<Uzivatele, int>), typeof(EfCoreRepositoryBase<Uzivatele, int>));
             services.AddApplicationServices();
-            services.AddKendoBlazor();
+            services.AddTelerikBlazor();
             services.AddRazorComponents();
-
+            
             services.AddSession(options =>
             {
                 options.Cookie.Name = ".SisWeb.Session";

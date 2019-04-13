@@ -1,42 +1,60 @@
 ﻿using SisWeb.Services.Dto.Authentication;
 using SisWeb.Services.Dto.Sis;
 using SisWeb.Services.Dto.System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using Hanssens.Net;
+using System;
 
 namespace SisWeb.Services.Session
 {
     public class SessionHelper : ISessionHelper
     {
+        private ConcurrentDictionary<string, UserSession> dictionary = new ConcurrentDictionary<string, UserSession>();
+        private const string SessionKey = "sisappsession";
+
         public SessionHelper()
         {
-            Clear();
+
         }
 
-        public string Language { get; set; }
-        public string AppUrl { get; set; }
-        public string BackUrl { get; set; }
-        public string BaseUri { get; set; }
-        public AuthResultDto AuthInformation { get; set; }
-        public List<LocalityModelDto> Localities { get; set; }
-        public NavigateModelDto NavigateModel { get; set; }
-        public int LocalityId { get; set; }
-
-        public void SetLocality(int localityId)
+        public UserSession GetSession()
         {
-            LocalityId = localityId;
+            string guid = "";
+
+            using (var storage = new LocalStorage())
+            {
+                if (storage.Exists(SessionKey))
+                    guid = storage.Get<string>(SessionKey);
+                else
+                {
+                    guid = Guid.NewGuid().ToString();
+
+                    storage.Store(SessionKey, guid);
+                    storage.Persist();
+                }
+            }
+
+            return GetSession(guid);
         }
 
-        public string GetLocalityConnectionString()
+        public UserSession GetSession(string guid)
         {
-            return Localities.SingleOrDefault(x => x.LocalityId == LocalityId).GetConnectionString();
-        }
+            UserSession session = null;
+            if (!dictionary.ContainsKey(guid))
+            {
+                session = new UserSession(guid);
+                if (!dictionary.TryAdd(guid, session))
+                    throw new ApplicationException("Error adding UserSesssion for guid:" + guid);
+            }
+            else
+            {
+                if (!dictionary.TryGetValue(guid, out session))
+                    throw new ApplicationException("Error getting UserSesssion for guid:" + guid);
+            }
 
-        public void Clear()
-        {
-            AuthInformation = new AuthResultDto();
-            NavigateModel = new NavigateModelDto();
-            Localities = new List<LocalityModelDto>();
+            return session;
         }
     }
 }

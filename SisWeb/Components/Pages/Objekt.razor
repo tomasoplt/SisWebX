@@ -6,11 +6,9 @@
 @inject ILogger<Objekt> logger
 
 @using SisWeb.Services.Dto.Sis
-@using Kendo.Blazor.Components.Grid
 @using SisWeb.Services.SisCore;
-
-@*<PopupComponent IsPopupOpen="@_isPopupOpen" Animation="PopupComponent.AnimationType.FadeIn" Title="A Popup Demo Title" />
-    <button type="button" class="btn btn-primary" onclick="@(e => OpenPopup())"><span class="oi oi-plus"></span> Open Popup</button>*@
+@using Telerik.Blazor.Components.Grid
+@using SisWeb.Services.Session
 
 @if (objects == null)
 {
@@ -18,7 +16,7 @@
 }
 else
 {
-    <ConfirmDialog IsPopupOpen="@isPopupOpen" Animation="ConfirmDialog.AnimationType.FadeIn" ActionMethod="@RemoveObject" Descr ="@removeQuestion" Title="Opravdu chcete odstranit záznam?" />
+    <ConfirmDialog IsPopupOpen="@isPopupOpen" Animation="ConfirmDialog.AnimationType.FadeIn" ActionMethod="@RemoveObject" Descr="@removeQuestion" Title="Opravdu chcete odstranit záznam?" />
     isPopupOpen = false;
 
     <div class="form-row align-items-center">
@@ -32,33 +30,30 @@ else
             <button type="button" onclick="@OnSearch" class="btn btn-success mb-2">Vyhledat</button>
         </div>
         <div class="col-2">
-        </div>
-        <div class="col-2">
             <button type="button" onclick="@OnNew" class="btn btn-primary mb-2">Nový objekt</button>
         </div>
     </div>
 
     <Row>
         <Column>
+            <TelerikGrid Data=@objects Pageable="true" PageSize=20 Sortable="true">
+                <TelerikGridColumns>
+                    <TelerikGridColumn Title="Objekt" Field=@nameof(ObjectModelDto.objekt) />
+                    <TelerikGridColumn Title="Typ objektu" Field=@nameof(ObjectModelDto.typ) />
+                    <TelerikGridColumn Title="Oblast" Field=@nameof(ObjectModelDto.oblast) />
 
-            <KendoGrid Data=@objects Pageable=true PageSize=20 Sortable=true>
+                    <TelerikGridCommandColumn>
+                        <TelerikGridCommandButton Command="View" Icon="edit" OnClick="TriggerView">Náhled</TelerikGridCommandButton>
+                        <TelerikGridCommandButton Command="Edit" Icon="edit" OnClick="TriggerEdit">Upravit</TelerikGridCommandButton>
+                        <TelerikGridCommandButton Command="Delete" Icon="delete" OnClick="TriggerRemove">Odstranit</TelerikGridCommandButton>
+                        <TelerikGridCommandButton Command="Plovak" Icon="edit" OnClick="TriggerPlovak">Plovák</TelerikGridCommandButton>
+                    </TelerikGridCommandColumn>
 
-                <KendoGridColumns>
-                    <KendoGridColumn Title="Objekt" Field=@nameof(ObjectModelDto.objekt) />
-                    <KendoGridColumn Title="Typ objektu" Field=@nameof(ObjectModelDto.typ) />
-                    <KendoGridColumn Title="Oblast" Field=@nameof(ObjectModelDto.oblast) />
+                </TelerikGridColumns>
 
-                    <KendoGridCommandColumn>
-                        <KendoGridCommandButton Command="View" Icon="edit" OnClick="@TriggerView">Náhled</KendoGridCommandButton>
-                        <KendoGridCommandButton Command="Edit" Icon="edit" OnClick="@TriggerEdit">Upravit</KendoGridCommandButton>
-                        <KendoGridCommandButton Command="Delete" Icon="delete" OnClick="@TriggerRemove">Odstranit</KendoGridCommandButton>
-                        <KendoGridCommandButton Command="Plovak" Icon="edit" OnClick="@TriggerPlovak">Plovák</KendoGridCommandButton>
-                    </KendoGridCommandColumn>
+             
 
-
-                </KendoGridColumns>
-
-            </KendoGrid>
+            </TelerikGrid>
         </Column>
     </Row>
 }
@@ -72,11 +67,14 @@ else
     List<ObjectModelDto> objects;
     private List<PlovakModelDto> plovaks;
     private string nazevObjektu;
-    
+    private UserSession userSession = null;
 
-     protected override async Task OnInitAsync()
+
+    protected override void OnInit()
     {
-        if (!session.AuthInformation.IsAuthentized)
+        userSession = session.GetSession();
+
+        if (!userSession.AuthInformation.IsAuthentized)
         {
             uriHelper.NavigateTo("/login");
             return;
@@ -89,8 +87,8 @@ else
     {
         try
         {
-            LocalityId = session.NavigateModel.LocalityId;
-            session.SetLocality(Convert.ToInt32(LocalityId));
+            LocalityId = userSession.NavigateModel.LocalityId;
+            userSession.SetLocality(Convert.ToInt32(LocalityId));
             ((ObjectService)(objectService)).SetConnectionString();
             objects = objectService.GetObjects(false);
         }
@@ -127,9 +125,9 @@ else
 
     void OnNew()
     {
-        session.NavigateModel.LocalityId = session.LocalityId.ToString();
-        session.NavigateModel.ObjektId = "0";
-        session.NavigateModel.Action = "New";
+        userSession.NavigateModel.LocalityId = userSession.LocalityId.ToString();
+        userSession.NavigateModel.ObjektId = "0";
+        userSession.NavigateModel.Action = "New";
         uriHelper.NavigateTo($"/objektdetail");
     }
 
@@ -156,28 +154,30 @@ else
         StateHasChanged();
     }
 
-    void TriggerObjectDetail(string action, ObjectModelDto item)
-    {
-        session.NavigateModel.LocalityId = session.LocalityId.ToString();
-        session.NavigateModel.ObjektId = item.objekt_id.Value.ToString();
-        session.NavigateModel.Action = action;
-        uriHelper.NavigateTo($"/objektdetail");
-    }
-
     void TriggerPlovak(GridCommandEventArgs args)
     {
         var item = (args.Item as ObjectModelDto);
-        session.NavigateModel.LocalityId = session.LocalityId.ToString();
-        session.NavigateModel.ObjektId = item.objekt_id.Value.ToString();
-        session.NavigateModel.Action = "View";
+        userSession.NavigateModel.LocalityId = userSession.LocalityId.ToString();
+        userSession.NavigateModel.ObjektId = item.objekt_id.Value.ToString();
+        userSession.NavigateModel.Action = "View";
 
         uriHelper.NavigateTo($"/plovak");
     }
 
+    void TriggerObjectDetail(string action, ObjectModelDto item)
+    {
+        userSession.NavigateModel.LocalityId = userSession.LocalityId.ToString();
+        userSession.NavigateModel.ObjektId = item.objekt_id.Value.ToString();
+        userSession.NavigateModel.Action = action;
+        uriHelper.NavigateTo($"/objektdetail");
+    }
+
+
+
     void RemoveObject()
     {
         var obj = objectService.GetObject(removeId);
-        obj.delete_u = session.AuthInformation.Username;
+        obj.delete_u = userSession.AuthInformation.Username;
         obj.delete_d = DateTime.Now;
         objectService.SaveObject(obj);
         OnSearch();

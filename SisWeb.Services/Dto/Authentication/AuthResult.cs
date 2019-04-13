@@ -17,5 +17,15 @@
             }
         }
         
+        public void Clear()
+        {
+            IsAuthentized = false;
+            Email = "";
+            FirstName = "";
+            Lastname = "";
+            Tel = "";
+            Password = "";
+            Username = "";
+        }
     }
 }

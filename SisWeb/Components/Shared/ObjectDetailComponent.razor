@@ -4,6 +4,7 @@
 @inject SisWeb.Services.SisCore.IMrakService mrakService
 @using SisWeb.Services.Dto.Sis
 @using SisWeb.Services.SisCore
+@using SisWeb.Services.Session
 
 @if (@Obj != null)
 {
@@ -165,10 +166,13 @@
 
     private ObjectModelDto Obj { get; set; }
     private List<MrakModelDto> mraky;
+    private UserSession userSession = null;
 
     protected override void OnInit()
     {
-        if (!session.AuthInformation.IsAuthentized)
+        userSession = session.GetSession();
+
+        if (!userSession.AuthInformation.IsAuthentized)
         {
             uriHelper.NavigateTo("/login");
             return;
@@ -177,11 +181,11 @@
 
     protected override void OnParametersSet()
     {
-        LocalityId = session.NavigateModel.LocalityId;
-        ObjektId = session.NavigateModel.ObjektId;
-        UserAction = session.NavigateModel.Action;
+        LocalityId = userSession.NavigateModel.LocalityId;
+        ObjektId = userSession.NavigateModel.ObjektId;
+        UserAction = userSession.NavigateModel.Action;
 
-        session.SetLocality(Convert.ToInt32(LocalityId));
+        userSession.SetLocality(Convert.ToInt32(LocalityId));
         ((ObjectService)(objectService)).SetConnectionString();
         ((MrakService)(mrakService)).SetConnectionString();
 
@@ -301,12 +305,12 @@
     {
         if (UserAction == "New")
         {
-            Obj.new_u = session.AuthInformation.Username;
+            Obj.new_u = userSession.AuthInformation.Username;
             Obj.new_d = DateTime.Now;
         }
         else
         {
-            Obj.modif_u = session.AuthInformation.Username;
+            Obj.modif_u = userSession.AuthInformation.Username;
             Obj.modif_d = DateTime.Now;
         }
         objectService.SaveObject(Obj);

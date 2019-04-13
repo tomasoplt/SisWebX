@@ -1,12 +1,11 @@
 ﻿@page "/plovak"
 
 @using SisWeb.Services.Dto.Sis
-@using Kendo.Blazor.Components.Grid
 @using SisWeb.Services.SisCore
 @using ChartJs.Blazor.ChartJS.LineChart
-@using Newtonsoft.Json
 @using SisWeb.Graphs
 @using Microsoft.Extensions.Configuration;
+@using SisWeb.Services.Session
 
 @inject IUriHelper uriHelper
 @inject SisWeb.Services.Session.ISessionHelper session
@@ -28,6 +27,7 @@ else
         </Column>
     </Row>
 
+
     <ChartJsLineChart ref="lineChartJs"
                       Config="@lineChartConfig"
                       Width="600"
@@ -35,23 +35,23 @@ else
 
     <br />
 
-    <KendoGrid Data=@plovaks Pageable=true PageSize=20 Sortable=true>
 
-        <KendoGridColumns>
-            <KendoGridColumn Title="Měřeno" Field=@nameof(PlovakModelDto.Merenos) />
-            <KendoGridColumn Title="Napětí panel" Field=@nameof(PlovakModelDto.NapetiPanel) />
-            <KendoGridColumn Title="Napětí Aku" Field=@nameof(PlovakModelDto.NapetiAku) />
-            <KendoGridColumn Title="Poznámka" Field=@nameof(PlovakModelDto.Poznamka) />
+    <TelerikGrid Data=@plovaks Pageable="true" PageSize=20 Sortable="true">
 
+        <TelerikGridColumns>
+            <TelerikGridColumn Title="Měřeno" Field=@nameof(PlovakModelDto.Merenos) />
+            <TelerikGridColumn Title="Napětí panel" Field=@nameof(PlovakModelDto.NapetiPanel) />
+            <TelerikGridColumn Title="Napětí Aku" Field=@nameof(PlovakModelDto.NapetiAku) />
+            <TelerikGridColumn Title="Poznámka" Field=@nameof(PlovakModelDto.Poznamka) />
 
-            <KendoGridCommandColumn>
-                <KendoGridCommandButton Command="View" Icon="edit" OnClick="TriggerView">Náhled</KendoGridCommandButton>
-                <KendoGridCommandButton Command="Edit" Icon="edit" OnClick="TriggerEdit">Upravit</KendoGridCommandButton>
-                <KendoGridCommandButton Command="Delete" Icon="delete" OnClick="TriggerRemove">Odstranit</KendoGridCommandButton>
-            </KendoGridCommandColumn>
-        </KendoGridColumns>
+            <TelerikGridCommandColumn>
+                <TelerikGridCommandButton Command="View" Icon="edit" OnClick="TriggerView">Náhled</TelerikGridCommandButton>
+                <TelerikGridCommandButton Command="Edit" Icon="edit" OnClick="TriggerEdit">Upravit</TelerikGridCommandButton>
+                <TelerikGridCommandButton Command="Delete" Icon="delete" OnClick="TriggerRemove">Odstranit</TelerikGridCommandButton>
+            </TelerikGridCommandColumn>
+        </TelerikGridColumns>
 
-    </KendoGrid>
+    </TelerikGrid>
 }
 
 @functions {
@@ -68,24 +68,26 @@ else
     bool isPopupOpen = false;
     string removeQuestion = "";
     int removeId = 0;
+    private UserSession userSession = null;
 
     protected override void OnInit()
     {
-        if (!session.AuthInformation.IsAuthentized)
+        userSession = session.GetSession();
+        if (!userSession.AuthInformation.IsAuthentized)
         {
             uriHelper.NavigateTo("/login");
             return;
         }
 
-        LocalityId = session.NavigateModel.LocalityId;
-        ObjektId = session.NavigateModel.ObjektId;
-        UserAction = session.NavigateModel.Action;
+        LocalityId = userSession.NavigateModel.LocalityId;
+        ObjektId = userSession.NavigateModel.ObjektId;
+        UserAction = userSession.NavigateModel.Action;
 
-        session.SetLocality(Convert.ToInt32(LocalityId));
+        userSession.SetLocality(Convert.ToInt32(LocalityId));
         ((PlovakService)(plovakService)).SetConnectionString();
 
         plovaks = new List<PlovakModelDto>();
-        session.BackUrl = $"/objekt/{LocalityId.ToString()}";
+        userSession.BackUrl = $"/objekt";
 
         LoadData();
 
@@ -107,22 +109,6 @@ else
         lineChartConfig = lineChartSvc.GetConfiguration("Plováky", plovaksForGraph);
     }
 
-    string DataStr
-    {
-        get => JsonConvert.SerializeObject(lineChartConfig.Data, Formatting.Indented);
-        set
-        {
-            lineChartConfig.Data = JsonConvert.DeserializeObject<LineChartData>(value);
-            Console.WriteLine(JsonConvert.SerializeObject(lineChartConfig.Data));
-        }
-    }
-
-    void OnDataStrChange(string dataStr)
-    {
-        lineChartConfig.Data = JsonConvert.DeserializeObject<LineChartData>(dataStr);
-        lineChartJs.Update();
-    }
-
     void OnSearch()
     {
         LoadData();
@@ -138,7 +124,7 @@ else
     void RemoveObject()
     {
         var obj = plovakService.GetSingle(removeId);
-        obj.delete_u = session.AuthInformation.Username;
+        obj.delete_u = userSession.AuthInformation.Username;
         obj.delete_d = DateTime.Now;
         plovakService.Save(obj);
         LoadData();
@@ -147,30 +133,30 @@ else
 
     void ViewDetail(string action, int id)
     {
-        session.NavigateModel.Action = action;
-        session.NavigateModel.PlovakId = id.ToString();
+        userSession.NavigateModel.Action = action;
+        userSession.NavigateModel.PlovakId = id.ToString();
         uriHelper.NavigateTo("/plovakdetail");
     }
 
-    void TriggerView(GridCommandEventArgs args)
+    void TriggerView(Telerik.Blazor.Components.Grid.GridCommandEventArgs args)
     {
         var item = (args.Item as PlovakModelDto);
         ViewDetail("View", item.PlovakId.Value);
     }
 
-    void TriggerEdit(GridCommandEventArgs args)
+    void TriggerEdit(Telerik.Blazor.Components.Grid.GridCommandEventArgs args)
     {
         var item = (args.Item as PlovakModelDto);
         ViewDetail("Edit", item.PlovakId.Value);
     }
 
-    void TriggerRemove(GridCommandEventArgs args)
+    void TriggerRemove(Telerik.Blazor.Components.Grid.GridCommandEventArgs args)
     {
         var item = (args.Item as PlovakModelDto);
 
         isPopupOpen = true;
         removeId = item.PlovakId.Value;
-        if ( item.Mereno != null)
+        if (item.Mereno != null)
             removeQuestion = $"Opravdu chcete odstranit: {item.Mereno.Value.ToString("dd.MM.yyyy HH:mm:ss")} ?";
         else
             removeQuestion = $"Opravdu chcete položku : {item.PlovakId} ?";

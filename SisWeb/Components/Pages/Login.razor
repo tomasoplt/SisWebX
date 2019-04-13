@@ -2,6 +2,9 @@
 @inject IUriHelper uriHelper
 @inject SisWeb.Services.Authentication.IUserService userService
 @inject SisWeb.Services.Session.ISessionHelper session
+@using Core.Core.NetCore.Session
+@using Microsoft.AspNetCore.Http
+@using SisWeb.Services.Session
 
 <div class='col-12'>
     <div class="page-title">
@@ -46,6 +49,14 @@
     string username { get; set; } = "";
     string password { get; set; } = "";
     string message { get; set; } = "";
+    private UserSession userSession = null;
+
+    protected override async Task OnInitAsync()
+    {
+        userSession = session.GetSession();
+
+        base.OnInit();
+    }
 
     void OnUsernameChanged(UIChangeEventArgs changeEvent)
     {
@@ -59,26 +70,34 @@
 
     async void LoginUser()
     {
-        var result = await userService.LoginUser(username, password, true);
-        if (result.IsAuthentized)
+        try
         {
-            session.AuthInformation.Username = username;
-            session.AuthInformation.Password = password;
-            session.AuthInformation.IsAuthentized = true;
-            session.AuthInformation.Email = result.Email;
-            session.AuthInformation.FirstName = result.FirstName;
-            session.AuthInformation.Lastname = result.Lastname;
-            session.AuthInformation.Tel = result.Tel;
-            session.BaseUri = uriHelper.GetBaseUri().TrimEnd('/');
+            var result = await userService.LoginUser(username, password, true);
+            if (result.IsAuthentized)
+            {
+                userSession.AuthInformation.Username = username;
+                userSession.AuthInformation.Password = password;
+                userSession.AuthInformation.IsAuthentized = true;
+                userSession.AuthInformation.Email = result.Email;
+                userSession.AuthInformation.FirstName = result.FirstName;
+                userSession.AuthInformation.Lastname = result.Lastname;
+                userSession.AuthInformation.Tel = result.Tel;
+                userSession.BaseUri = uriHelper.GetBaseUri().TrimEnd('/');
 
-            // Load localities
-            session.Localities = await userService.GetUserLocalities(session.AuthInformation.Username, session.AuthInformation.Password, true);
+                // Load localities
+                userSession.Localities = await userService.GetUserLocalities(userSession.AuthInformation.Username, userSession.AuthInformation.Password, true);
 
-            uriHelper.NavigateTo("/");
+                uriHelper.NavigateTo("/");
+            }
+            else
+            {
+                message = "Chybné uživatelské jméno nebo heslo";
+                StateHasChanged();
+            }
         }
-        else
+        catch (Exception ex)
         {
-            message = "Chybné uživatelské jméno nebo heslo";
+            message = ex.Message;
             StateHasChanged();
         }
     }

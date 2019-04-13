@@ -25,6 +25,7 @@ namespace SisWeb.Services.Authentication
         private IObjectService _objectService;
         private IConfiguration _configuration;
         private readonly ILogger _log;
+        private UserSession _userSession;
 
         public UserService(ISessionHelper sessionHelper, IObjectService objectService, ILogger<UserService> log, IConfiguration configuration)
         {
@@ -32,6 +33,7 @@ namespace SisWeb.Services.Authentication
             _objectService = objectService;
             _configuration = configuration;
             _log = log;
+            _userSession = _sessionHelper.GetSession();
         }
 
         public async Task<AuthResultDto> LoginUser(string login, string password, bool hashPassword)
@@ -85,27 +87,32 @@ namespace SisWeb.Services.Authentication
                 list.Add(item);
             }
 
-            _sessionHelper.Localities = list;
+            _userSession.Localities = list;
 
-            var localLocality = list.FirstOrDefault(x => x.Url == _sessionHelper.BaseUri);
+            var localLocality = list.FirstOrDefault(x => x.Url == _userSession.BaseUri);
             if ( localLocality != null)
             {
                 localLocality.IsLocal = true;
-                try
-                {
-                    ObjectService objectService = _objectService as ObjectService;
-                    _sessionHelper.SetLocality(localLocality.LocalityId.Value);
-                    objectService.SetConnectionString();
-                    localLocality.Objekty = _objectService.GetObjects(true);
-                }
-                catch ( Exception ex)
-                {
-                    _log.LogError(ex, "GetObjects");
-                }
+                FillLocality(localLocality);
             }
 
 
             return list;
+        }
+
+        public void FillLocality(LocalityModelDto localLocality)
+        {
+            try
+            {
+                ObjectService objectService = _objectService as ObjectService;
+                _userSession.SetLocality(localLocality.LocalityId.Value);
+                objectService.SetConnectionString();
+                localLocality.Objekty = _objectService.GetObjects(true);
+            }
+            catch (Exception ex)
+            {
+                _log.LogError(ex, "GetObjects");
+            }
         }
 
         private void SetClientProperties(SisWebService.BaseDataClient client)

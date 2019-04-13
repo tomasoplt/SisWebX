@@ -10,5 +10,6 @@ namespace SisWeb.Services.Authentication
         string HashPwd(string pwd);
         Task<AuthResultDto> LoginUser(string login, string password, bool hashPassword);
         Task<List<LocalityModelDto>> GetUserLocalities(string login, string password, bool hashPassword);
+        void FillLocality(LocalityModelDto localLocality);
     }
 }

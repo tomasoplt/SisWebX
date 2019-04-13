@@ -1,6 +1,7 @@
 ﻿https://github.com/dotnet/core/blob/master/release-notes/3.0/preview/3.0.0-preview3.md
 https://drive.google.com/drive/folders/1DZDYsKB-MWu4aR-D9Pp837Bb8KHLMJn5
 Blazorise: https://blazorise.com/docs/
+Chyby: https://docs.google.com/document/d/1mAxfwIVPhx0FiyDjIJiprJq50vSFdoo1NDDAwMoCqOc/edit
 
 Todo:
 Deploy na IIS 
