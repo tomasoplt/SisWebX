@@ -23,18 +23,15 @@ else
 
     <Row>
         <Column>
-            <button class="btn btn-primary" onclick="@UpdateChart">Obnov graf</button>
+            <button class="btn btn-primary" onclick="@GoBack">Zpět na objekt</button>
+            @*<button class="btn btn-primary" onclick="@UpdateChart">Obnov graf</button>*@
         </Column>
     </Row>
 
 
-    <ChartJsLineChart ref="lineChartJs"
-                      Config="@lineChartConfig"
-                      Width="600"
-                      Height="200" />
-
+    <ChartJsLineChart ref="lineChartJs" Config="@lineChartConfig" Width="600" Height="200" />
+    
     <br />
-
 
     <TelerikGrid Data=@plovaks Pageable="true" PageSize=20 Sortable="true">
 
@@ -103,10 +100,17 @@ else
         var graphSection = configuration.GetSection("Graph");
         var settingsSection = graphSection.GetSection("Settings");
         int maxRecords = settingsSection.GetValue<int>("MaxRecords");
+        int verticalRangeMin = settingsSection.GetValue<int>("VerticalRangeMin");
+        int verticalRangeMax = settingsSection.GetValue<int>("VerticalRangeMax");
 
         var lineChartSvc = new LineChartService();
         var plovaksForGraph = plovaks.Take(maxRecords).OrderBy(x => x.Mereno).ToList();
-        lineChartConfig = lineChartSvc.GetConfiguration("Plováky", plovaksForGraph);
+        lineChartConfig = lineChartSvc.GetConfiguration("Plováky", plovaksForGraph, verticalRangeMin, verticalRangeMax);
+    }
+
+    void GoBack()
+    {
+        uriHelper.NavigateTo(userSession.BackUrl);
     }
 
     void OnSearch()

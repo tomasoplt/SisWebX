@@ -14,7 +14,7 @@ namespace SisWeb.Graphs
 {
     public class LineChartService
     {
-        public LineChartConfig GetConfiguration(string caption, List<PlovakModelDto> plovakItems )
+        public LineChartConfig GetConfiguration(string caption, List<PlovakModelDto> plovakItems, int verticalRangeMin, int verticalRangeMax)
         {
             LineChartConfig lineChartConfig;
 
@@ -23,6 +23,10 @@ namespace SisWeb.Graphs
                 CanvasId = "LineChart",
                 Options = new LineChartOptions
                 {
+                    Animation = new Animation
+                    {
+                        Duration = 0
+                    },
                     Text = caption,
                     Display = true,
                     Responsive = true,
@@ -36,6 +40,7 @@ namespace SisWeb.Graphs
                     {
                         xAxes = new List<Axis>
                         {
+                           
                             new Axis
                             {
                                 ScaleLabel = new ScaleLabel
@@ -47,7 +52,13 @@ namespace SisWeb.Graphs
                         yAxes = new List<Axis>
                         {
                             new Axis
-                            { 
+                            {
+                                Ticks = new Ticks
+                                {
+                                    Min = verticalRangeMin,
+                                    Max = verticalRangeMax,
+                                    BeginAtZero = false
+                                },
                                 ScaleLabel = new ScaleLabel
                                 {
                                     LabelString = "Napětí"

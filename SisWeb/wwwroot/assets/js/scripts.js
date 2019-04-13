@@ -349,33 +349,33 @@ jQuery(function($) {
      --------------------------------*/
     CMPLTADMIN_SETTINGS.mainmenuScroll = function() {
 
-        //console.log("expand scroll menu");
+        console.log("expand scroll menu");
 
-        //var topbar = $(".page-topbar").height();
-        ////console.log(topbar);
-        //var projectinfo = 0; // $(".project-info").innerHeight();
-        ////console.log(projectinfo);
+        var topbar = $(".page-topbar").height();
+        //console.log(topbar);
+        var projectinfo = 0; // $(".project-info").innerHeight();
+        //console.log(projectinfo);
 
-        //var height = window.innerHeight - topbar - projectinfo;
+        var height = window.innerHeight - topbar - projectinfo;
 
-        ///*$('.fixedscroll #main-menu-wrapper').height(height).perfectScrollbar({
-        //    suppressScrollX: true
-        //});*/
-        //if($('.fixedscroll #main-menu-wrapper').length){
+        /*$('.fixedscroll #main-menu-wrapper').height(height).perfectScrollbar({
+            suppressScrollX: true
+        });*/
+        if($('.fixedscroll #main-menu-wrapper').length){
             
-        //    $('.fixedscroll #main-menu-wrapper').height(height);
-        //    //console.log(height);
-        //    const ps = new PerfectScrollbar('.fixedscroll #main-menu-wrapper', {
-        //      suppressScrollX: true
-        //    });
+            $('.fixedscroll #main-menu-wrapper').height(height);
+            //console.log(height);
+            const ps = new PerfectScrollbar('.fixedscroll #main-menu-wrapper', {
+              suppressScrollX: true
+            });
 
-        //}
-        //    $("#main-menu-wrapper .wraplist").height('auto');
+        }
+            $("#main-menu-wrapper .wraplist").height('auto');
 
 
-        ///*show first sub menu of open menu item only - opened after closed*/
-        //// > in the selector is used to select only immediate elements and not the inner nested elements.
-        //$("li.open > .sub-menu").attr("style", "display:block;");
+        /*show first sub menu of open menu item only - opened after closed*/
+        // > in the selector is used to select only immediate elements and not the inner nested elements.
+        $("li.open > .sub-menu").attr("style", "display:block;");
 
 
     };
@@ -425,21 +425,21 @@ jQuery(function($) {
                 return;
             }
 
-            //var parent = $(this).parent().parent();
-            //var sub = $(this).next();
+            var parent = $(this).parent().parent();
+            var sub = $(this).next();
 
-            //parent.children('li.open').children('.sub-menu').slideUp(200);
-            //parent.children('li.open').children('a').children('.arrow').removeClass('open');
-            //parent.children('li').removeClass('open');
+            parent.children('li.open').children('.sub-menu').slideUp(200);
+            parent.children('li.open').children('a').children('.arrow').removeClass('open');
+            parent.children('li').removeClass('open');
 
-            //if (sub.is(":visible")) {
-            //    $(this).find(".arrow").removeClass("open");
-            //    sub.slideUp(200);
-            //} else {
-            //    $(this).parent().addClass("open");
-            //    $(this).find(".arrow").addClass("open");
-            //    sub.slideDown(200);
-            //}
+            if (sub.is(":visible")) {
+                $(this).find(".arrow").removeClass("open");
+                sub.slideUp(200);
+            } else {
+                $(this).parent().addClass("open");
+                $(this).find(".arrow").addClass("open");
+                sub.slideDown(200);
+            }
 
         });
 
@@ -2098,9 +2098,9 @@ var table5 = $('#example-5').DataTable();
 
     window.Resizer = {
         Resize: function () {
-            CMPLTADMIN_SETTINGS.windowBasedLayout();
             CMPLTADMIN_SETTINGS.mainMenu();
             CMPLTADMIN_SETTINGS.mainmenuCollapsed();
+            CMPLTADMIN_SETTINGS.mainmenuScroll();
             return "";
         }
     };

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using ChartJs.Blazor.ChartJS;
 using ChartJs.Blazor.ChartJS.Common;
 using Microsoft.AspNetCore.Components;
@@ -14,18 +15,32 @@ namespace ChartJs.Blazor.Charts
         [Parameter] public int Width { get; private set; } = 400;
 
         [Parameter] public int Height { get; private set; } = 400;
-        
-        protected override void OnAfterRender()
+
+        protected async override Task OnAfterRenderAsync()
         {
             try
             {
-                base.OnAfterRender();
-                JsRuntime.SetupChart(Config);
+                await base.OnAfterRenderAsync();
+                await JsRuntime.SetupChart(Config);
             }
             catch
             {
             } // https://github.com/aspnet/AspNetCore/issues/8327
+
+            return;
         }
+
+        //protected override void OnAfterRender()
+        //{
+        //    try
+        //    {
+        //        base.OnAfterRender();
+        //        JsRuntime.SetupChart(Config);
+        //    }
+        //    catch
+        //    {
+        //    } // https://github.com/aspnet/AspNetCore/issues/8327
+        //}
 
         public void Update()
         {

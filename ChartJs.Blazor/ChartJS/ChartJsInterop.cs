@@ -9,43 +9,44 @@ namespace ChartJs.Blazor.ChartJS
 {
     public static class ChartJsInterop
     {
-        public static Task<string> Resize(this IJSRuntime jsRuntime)
+        public async static void Resize(this IJSRuntime jsRuntime)
         {
             try
             {
-                return jsRuntime.InvokeAsync<string>("Resizer.Resize");
+                await jsRuntime.InvokeAsync<object>("Resizer.Resize");
             }
             catch (Exception exp)
             {
-
+                Console.WriteLine(exp);
             }
-            return Task.FromResult<string>("");
         }
 
-        public static Task<bool> SetupChart(this IJSRuntime jsRuntime, ChartConfigBase chartConfig)
+        public static async Task<bool> SetupChart(this IJSRuntime jsRuntime, ChartConfigBase chartConfig)
         {
             try
             {
-                return jsRuntime.InvokeAsync<bool>("ChartJSInterop.SetupChart", SerializeConfig(chartConfig));
+                return await jsRuntime.InvokeAsync<bool>("ChartJSInterop.SetupChart", SerializeConfig(chartConfig));
             }
             catch (Exception exp)
             {
-
+                Console.WriteLine(exp);
             }
-            return Task.FromResult<bool>(false);
+
+            return await Task.FromResult<bool>(false);
         }
 
-        public static Task<bool> UpdateChart(this IJSRuntime jsRuntime, ChartConfigBase chartConfig)
+        public static async Task<bool> UpdateChart(this IJSRuntime jsRuntime, ChartConfigBase chartConfig)
         {
             try
             {
-                return jsRuntime.InvokeAsync<bool>("ChartJSInterop.UpdateChart", SerializeConfig(chartConfig));
+                return await jsRuntime.InvokeAsync<bool>("ChartJSInterop.UpdateChart", SerializeConfig(chartConfig));
             }
             catch (Exception exp)
             {
-
+                Console.WriteLine(exp);
             }
-            return Task.FromResult<bool>(false);
+
+            return await Task.FromResult<bool>(false);
         }
 
         private static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
