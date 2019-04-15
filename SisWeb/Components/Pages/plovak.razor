@@ -104,7 +104,7 @@ else
         int verticalRangeMax = settingsSection.GetValue<int>("VerticalRangeMax");
 
         var lineChartSvc = new LineChartService();
-        var plovaksForGraph = plovaks.Take(maxRecords).OrderBy(x => x.Mereno).ToList();
+        var plovaksForGraph = plovaks.Where(x=>x.Mereno != null).Take(maxRecords).OrderBy(x => x.Mereno).ToList();
         lineChartConfig = lineChartSvc.GetConfiguration("Plováky", plovaksForGraph, verticalRangeMin, verticalRangeMax);
     }
 

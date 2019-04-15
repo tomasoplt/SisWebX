@@ -40,7 +40,6 @@ namespace SisWeb.Graphs
                     {
                         xAxes = new List<Axis>
                         {
-                           
                             new Axis
                             {
                                 ScaleLabel = new ScaleLabel

@@ -9,5 +9,6 @@ namespace ChartJs.Blazor.ChartJS.LineChart
         public GridLine GridLines { get; set; }
         public Ticks Ticks { get; set; }
         public bool stacked { get; set; }
+        public string Type { get; set; } = null;
     }
 }

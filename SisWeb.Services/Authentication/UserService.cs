@@ -89,8 +89,8 @@ namespace SisWeb.Services.Authentication
 
             _userSession.Localities = list;
 
-            var localLocality = list.FirstOrDefault(x => x.Url == _userSession.BaseUri);
-            if ( localLocality != null)
+            var localLocalities = list.Where(x => x.Url == _userSession.BaseUri).ToList();
+            foreach ( var localLocality in localLocalities)
             {
                 localLocality.IsLocal = true;
                 FillLocality(localLocality);
