@@ -192,6 +192,7 @@
 
     void Logout()
     {
+        session.DestroySession();
         userSession.Clear();
         uriHelper.NavigateTo("/login");
     }

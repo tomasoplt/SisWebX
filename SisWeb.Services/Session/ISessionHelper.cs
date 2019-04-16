@@ -9,5 +9,6 @@ namespace SisWeb.Services.Session
     {
         UserSession GetSession();
         UserSession GetSession(string guid);
+        void DestroySession();
     }
 }

@@ -1,6 +1,7 @@
 ﻿using SisWeb.Services.Dto.Authentication;
 using SisWeb.Services.Dto.Sis;
 using SisWeb.Services.Dto.System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,6 +15,7 @@ namespace SisWeb.Services.Session
             AuthInformation = new AuthResultDto();
             NavigateModel = new NavigateModelDto();
             Counter = 0;
+            MarkAsUsed();
         }
 
         public string Guid { get; set; }
@@ -27,6 +29,7 @@ namespace SisWeb.Services.Session
         public NavigateModelDto NavigateModel { get; set; }
         public int LocalityId { get; set; }
         public int Counter { get; set; }
+        public DateTime LastDate { get; set; }
 
         public void SetLocality(int localityId)
         {
@@ -50,6 +53,11 @@ namespace SisWeb.Services.Session
             AuthInformation.Clear();
             Localities.Clear();
             NavigateModel.Clear();
+        }
+
+        public void MarkAsUsed()
+        {
+            LastDate = DateTime.Now;
         }
     }
 }

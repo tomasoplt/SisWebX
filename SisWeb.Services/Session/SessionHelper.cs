@@ -16,7 +16,44 @@ namespace SisWeb.Services.Session
 
         public SessionHelper()
         {
+            
+        }
 
+        public void DestroySession()
+        {
+            using (var storage = new LocalStorage())
+            {
+                if (storage.Exists(SessionKey))
+                {
+                    string guid = storage.Get<string>(SessionKey);
+                    if (dictionary.ContainsKey(guid))
+                    {
+                        if (!dictionary.TryRemove(guid, out UserSession removedSession))
+                            throw new ApplicationException("Error DestroySession for guid:" + guid);
+                    }
+                }
+            }
+
+            using (var storage = new LocalStorage())
+            {
+                storage.Clear();
+                storage.Persist();
+            }
+        }
+
+        private void RemoveOldSession()
+        {
+            const int MaxLifeTime = 30;
+
+            DateTime timeBack = DateTime.Now.AddMinutes(-MaxLifeTime);
+            foreach( var session in dictionary)
+            {
+                if (session.Value.LastDate < timeBack)
+                {
+                    dictionary.TryRemove(session.Key, out UserSession removedSession);
+                    break;
+                }
+            }
         }
 
         public UserSession GetSession()
@@ -41,6 +78,8 @@ namespace SisWeb.Services.Session
 
         public UserSession GetSession(string guid)
         {
+            RemoveOldSession();
+
             UserSession session = null;
             if (!dictionary.ContainsKey(guid))
             {
@@ -52,6 +91,8 @@ namespace SisWeb.Services.Session
             {
                 if (!dictionary.TryGetValue(guid, out session))
                     throw new ApplicationException("Error getting UserSesssion for guid:" + guid);
+
+                session.MarkAsUsed();
             }
 
             return session;
