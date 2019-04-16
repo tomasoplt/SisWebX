@@ -1,11 +1,7 @@
-﻿using SisWeb.Services.Dto.Authentication;
-using SisWeb.Services.Dto.Sis;
-using SisWeb.Services.Dto.System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Concurrent;
 using Hanssens.Net;
 using System;
+using System.Globalization;
 
 namespace SisWeb.Services.Session
 {
@@ -13,6 +9,8 @@ namespace SisWeb.Services.Session
     {
         private ConcurrentDictionary<string, UserSession> dictionary = new ConcurrentDictionary<string, UserSession>();
         private const string SessionKey = "sisappsession";
+        private const int MaxLifeTime = 30;
+        private const string TimeFormat = "yyyyMMddHHmm";
 
         public SessionHelper()
         {
@@ -43,37 +41,73 @@ namespace SisWeb.Services.Session
 
         private void RemoveOldSession()
         {
-            const int MaxLifeTime = 30;
+
 
             DateTime timeBack = DateTime.Now.AddMinutes(-MaxLifeTime);
-            foreach( var session in dictionary)
+            bool removed = true;
+
+            while (removed)
             {
-                if (session.Value.LastDate < timeBack)
+                removed = false;
+                foreach (var session in dictionary)
                 {
-                    dictionary.TryRemove(session.Key, out UserSession removedSession);
-                    break;
+                    if (session.Value.LastDate < timeBack)
+                    {
+                        dictionary.TryRemove(session.Key, out UserSession removedSession);
+                        removed = true;
+                        break;
+                    }
                 }
             }
+        }
+
+        private SessionParams GetSessionParams(string val)
+        {
+            SessionParams sessParams = new SessionParams();
+
+            string[] values = val.Split('|');
+            if ( values.Length >= 1 )
+                sessParams.Guid = values[0];
+            if (values.Length >= 2)
+                sessParams.Time = DateTime.ParseExact(values[1], TimeFormat, CultureInfo.InvariantCulture);
+
+            return sessParams;
         }
 
         public UserSession GetSession()
         {
             string guid = "";
+            DateTime timeBack = DateTime.Now.AddMinutes(-MaxLifeTime);
 
             using (var storage = new LocalStorage())
             {
                 if (storage.Exists(SessionKey))
-                    guid = storage.Get<string>(SessionKey);
+                {
+                    string sessionParameter = storage.Get<string>(SessionKey);
+                    SessionParams parms = GetSessionParams(sessionParameter);
+                    guid = parms.Guid;
+
+                    if (parms.Time == null || parms.Time.Value < timeBack)
+                    {
+                        guid = GenerateGuid();
+                        storage.Store(SessionKey, guid);
+                        storage.Persist();
+                    }
+                }
                 else
                 {
-                    guid = Guid.NewGuid().ToString();
-
+                    guid = GenerateGuid();
                     storage.Store(SessionKey, guid);
                     storage.Persist();
                 }
             }
 
             return GetSession(guid);
+        }
+
+        private string GenerateGuid()
+        {
+            return Guid.NewGuid().ToString() + "|" + DateTime.Now.ToString(TimeFormat);
         }
 
         public UserSession GetSession(string guid)

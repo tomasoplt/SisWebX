@@ -1,7 +1,53 @@
 ﻿@page "/error"
+@inject SisWeb.Services.Session.ISessionHelper session
 
 <h3>V aplikaci nastala chyba</h3>
+<div class="container">
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <div class="panel panel-danger">
+                <div class="panel-heading">
+                    <h3 class="text-center">
+                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Oooooops:
+                        <small>@Message</small>
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <p>@Source</p>
+
+                    <ul class="list-group">
+                        <li class="list-group-item">@ErrorAll</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+
+        </div>
+    </div>
+   
+</div>
 
 @functions {
 
+    string Message { get; set; }
+    string Source { get; set; }
+    string ErrorAll { get; set; }
+
+    protected override void OnInit()
+    {
+        var userSession = session.GetSession();
+
+        if (userSession != null && userSession.LastError != null)
+        {
+            Message = userSession.LastError.Message;
+            Source = userSession.LastError.Source;
+            ErrorAll = userSession.LastError.ToString();
+        }
+    }
 }

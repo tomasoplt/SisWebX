@@ -30,50 +30,46 @@ namespace SisWeb.Services.SisCore
 
         public void SaveObject(ObjectModelDto obj)
         {
-            try
+            Objekty dbObj;
+            if (obj.objekt_id == null)
             {
-                Objekty dbObj;
-                if (obj.objekt_id == null)
-                    dbObj = new Objekty();
-                else
-                    dbObj = _context.Objekty.SingleOrDefault(x => x.ObjektId == obj.objekt_id);
-
-                dbObj.Objekt = obj.objekt;
-                dbObj.MrakId = obj.MrakId;
-                dbObj.Typ = obj.typ;
-                dbObj.Alternativni = obj.alternativni;
-                dbObj.X = obj.x;
-                dbObj.Y = obj.y;
-                dbObj.Z = obj.z;
-                dbObj.EGps = obj.e_gps;
-                dbObj.NGps = obj.n_gps;
-                dbObj.ZGps = obj.z_gps;
-                dbObj.Technologie = obj.technologie;
-                dbObj.Reference = obj.reference;
-                dbObj.Poznamka = obj.poznamka;
-
-                dbObj.NewD = obj.new_d;
-                dbObj.NewU = obj.new_u;
-
-                dbObj.ModifD = obj.modif_d;
-                dbObj.ModifU = obj.modif_u;
-
-                dbObj.DeleteU = obj.delete_u;
-                dbObj.DeleteD = obj.delete_d;
-
-                dbObj.Reftime = dbObj.ModifD;
-
-                if (obj.objekt_id == null)
-                {
-                    _context.Objekty.Add(dbObj);
-                }
-
-                _context.SaveChanges();
+                dbObj = new Objekty();
+                dbObj.ObjektId = _context.GetObjectId();
             }
-            catch (Exception ex)
+            else
+                dbObj = _context.Objekty.SingleOrDefault(x => x.ObjektId == obj.objekt_id);
+
+            dbObj.Objekt = obj.objekt;
+            dbObj.MrakId = obj.MrakId;
+            dbObj.Typ = obj.typ;
+            dbObj.Alternativni = obj.alternativni;
+            dbObj.X = obj.x;
+            dbObj.Y = obj.y;
+            dbObj.Z = obj.z;
+            dbObj.EGps = obj.e_gps;
+            dbObj.NGps = obj.n_gps;
+            dbObj.ZGps = obj.z_gps;
+            dbObj.Technologie = obj.technologie;
+            dbObj.Reference = obj.reference;
+            dbObj.Poznamka = obj.poznamka;
+
+            dbObj.NewD = obj.new_d;
+            dbObj.NewU = obj.new_u;
+
+            dbObj.ModifD = obj.modif_d;
+            dbObj.ModifU = obj.modif_u;
+
+            dbObj.DeleteU = obj.delete_u;
+            dbObj.DeleteD = obj.delete_d;
+
+            dbObj.Reftime = dbObj.ModifD;
+
+            if (obj.objekt_id == null)
             {
-                Console.WriteLine(ex.ToString());
+                _context.Objekty.Add(dbObj);
             }
+
+            _context.SaveChanges();
         }
 
 

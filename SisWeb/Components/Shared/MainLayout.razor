@@ -72,26 +72,12 @@
             <!-- MAIN MENU - START -->
             <div class="page-sidebar-wrapper" id="main-menu-wrapper">
 
-                <!-- USER INFO - START -->
                 <div class="profile-info row">
-
-                    <div class="profile-image col-4">
-                        <a href="ui-profile.html">
-                            <img alt="" src="/data/profile/profile.jpg" class="img-fluid rounded-circle">
-                        </a>
-                    </div>
-
                     <div class="profile-details col-8">
-                        <h3>
-                            <a href="ui-profile.html">@userSession.AuthInformation.FullName</a>
-                            <span class="profile-status online"></span>
-                        </h3>
+                       
                     </div>
-
                 </div>
-                <!-- USER INFO - END -->
-                @*Left menu  --------  Left menu *@
-                @*Left menu  --------  Left menu *@
+              
 
                 <ul class='wraplist' style="height: auto;">
 
@@ -159,7 +145,7 @@
 
 @functions {
 
-    UserSession userSession = null;
+        UserSession userSession = null;
 
     protected override void OnInit()
     {
@@ -223,7 +209,11 @@
         userSession.NavigateModel.ObjektId = objektId;
 
         if (reload)
-            uriHelper.NavigateTo("/objekt");
+        {
+            uriHelper.NavigateTo("\\");
+            uriHelper.NavigateTo("/plovak");
+            //uriHelper.NavigateTo("/objekt");
+        }
         else
             uriHelper.NavigateTo("/plovak");
     }

@@ -16,6 +16,7 @@ namespace SisWeb.Services.Session
             NavigateModel = new NavigateModelDto();
             Counter = 0;
             MarkAsUsed();
+            LastError = null;
         }
 
         public string Guid { get; set; }
@@ -30,6 +31,7 @@ namespace SisWeb.Services.Session
         public int LocalityId { get; set; }
         public int Counter { get; set; }
         public DateTime LastDate { get; set; }
+        public Exception LastError { get; set; }
 
         public void SetLocality(int localityId)
         {

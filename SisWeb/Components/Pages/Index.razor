@@ -8,7 +8,44 @@
 @using ChartJs.Blazor.ChartJS
 @using SisWeb.Services.Session
 
-<h3>Vítejte @userSession.AuthInformation.FirstName v aplikaci SIS</h3>
+@if (userSession.LastError == null)
+{
+    <h3>Vítejte @userSession.AuthInformation.FirstName v aplikaci SIS</h3>
+}
+else
+{
+    string Message = userSession.LastError.Message;
+    string Source = userSession.LastError.Source;
+    string ErrorAll = userSession.LastError.ToString();
+    userSession.LastError = null;
+
+    <div class="container">
+        <br>
+        <br>
+        <br>
+        <br>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <div class="panel panel-danger">
+                    <div class="panel-heading">
+                        <h3 class="text-center">
+                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Oooooops:
+                            <small>@Message</small>
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <p>@Source</p>
+
+                        <ul class="list-group">
+                            <li class="list-group-item">@ErrorAll</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 @functions {
 

@@ -15,6 +15,7 @@ namespace SisWeb.Services.Session
         int LocalityId { get; set; }
         int Counter { get; set; }
         DateTime LastDate { get; set; }
+        Exception LastError { get; set; }
 
         AuthResultDto AuthInformation { get; set; }
         NavigateModelDto NavigateModel { get; set; }

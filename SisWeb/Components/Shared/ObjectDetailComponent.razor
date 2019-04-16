@@ -2,6 +2,8 @@
 @inject SisWeb.Services.Session.ISessionHelper session
 @inject SisWeb.Services.SisCore.IObjectService objectService
 @inject SisWeb.Services.SisCore.IMrakService mrakService
+@inject ILogger<ObjectDetailComponent> logger
+
 @using SisWeb.Services.Dto.Sis
 @using SisWeb.Services.SisCore
 @using SisWeb.Services.Session
@@ -303,17 +305,28 @@
 
     void OnSave()
     {
-        if (UserAction == "New")
+        try
         {
-            Obj.new_u = userSession.AuthInformation.Username;
-            Obj.new_d = DateTime.Now;
+            if (UserAction == "New")
+            {
+                Obj.new_u = userSession.AuthInformation.Username;
+                Obj.new_d = DateTime.Now;
+            }
+            else
+            {
+                Obj.modif_u = userSession.AuthInformation.Username;
+                Obj.modif_d = DateTime.Now;
+            }
+            objectService.SaveObject(Obj);
         }
-        else
+        catch (Exception ex)
         {
-            Obj.modif_u = userSession.AuthInformation.Username;
-            Obj.modif_d = DateTime.Now;
+            logger.LogError("OnSave", ex);
+            userSession.LastError = ex;
+            uriHelper.NavigateTo("\\");
+            return;
         }
-        objectService.SaveObject(Obj);
+
         uriHelper.NavigateTo("/objekt");
     }
 
