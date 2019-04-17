@@ -25,7 +25,6 @@ namespace SisWeb.Services.Authentication
         private IObjectService _objectService;
         private IConfiguration _configuration;
         private readonly ILogger _log;
-        private UserSession _userSession;
 
         public UserService(ISessionHelper sessionHelper, IObjectService objectService, ILogger<UserService> log, IConfiguration configuration)
         {
@@ -33,7 +32,6 @@ namespace SisWeb.Services.Authentication
             _objectService = objectService;
             _configuration = configuration;
             _log = log;
-            _userSession = _sessionHelper.GetSession();
         }
 
         public async Task<AuthResultDto> LoginUser(string login, string password, bool hashPassword)
@@ -68,6 +66,9 @@ namespace SisWeb.Services.Authentication
             SetClientProperties(client);
             var hashedPassword = hashPassword ? HashPwd(password) : password;
             var localities = await client.GetSISSrvLocalitiesForUserAsync(SisWebService.LocalityType.SIS, login, hashedPassword);
+            
+            // refresh session informations
+            UserSession userSession = _sessionHelper.GetSession();
 
             var list = new List<LocalityModelDto>();
             foreach (var locality in localities)
@@ -87,26 +88,25 @@ namespace SisWeb.Services.Authentication
                 list.Add(item);
             }
 
-            _userSession.Localities = list;
+            userSession.Localities = list;
 
-            var localLocalities = list.Where(x => x.Url == _userSession.BaseUri).ToList();
+            var localLocalities = list.Where(x => x.Url == userSession.BaseUri).ToList();
             foreach ( var localLocality in localLocalities)
             {
                 localLocality.IsLocal = true;
-                FillLocality(localLocality);
+                FillLocality(localLocality, userSession);
             }
-
 
             return list;
         }
 
-        public void FillLocality(LocalityModelDto localLocality)
+        public void FillLocality(LocalityModelDto localLocality, UserSession userSession)
         {
             try
             {
                 ObjectService objectService = _objectService as ObjectService;
-                _userSession.SetLocality(localLocality.LocalityId.Value);
-                objectService.SetConnectionString();
+                userSession.SetLocality(localLocality.LocalityId.Value);
+                objectService.SetConnectionString(userSession, localLocality.LocalityId.Value);
                 localLocality.Objekty = _objectService.GetObjects(true);
             }
             catch (Exception ex)

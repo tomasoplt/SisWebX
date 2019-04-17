@@ -14,6 +14,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.0-preview3-19153-02" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.0.0-preview3.19153.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.0.0-preview3.19153.1" />
+    <PackageReference Include="Syncfusion.EJ2.AspNet.Core.RazorComponents" Version="17.1.0.38-beta" />
     <PackageReference Include="Telerik.UI.for.Blazor" Version="0.4.0" />
   </ItemGroup>
 

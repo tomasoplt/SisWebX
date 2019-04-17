@@ -84,11 +84,13 @@
         ObjektId = userSession.NavigateModel.ObjektId;
         UserAction = userSession.NavigateModel.Action;
 
-        userSession.SetLocality(Convert.ToInt32(LocalityId));
-        ((PlovakService)(plovakService)).SetConnectionString();
+        int localityId = Convert.ToInt32(LocalityId);
+        userSession.SetLocality(localityId);
+        ((PlovakService)(plovakService)).SetConnectionString(localityId);
 
         Obj = plovakService.GetSingle(Convert.ToInt32(userSession.NavigateModel.PlovakId));
         userSession.BackUrl = $"/plovak";
+        session.SaveSession(userSession);
 
         base.OnParametersSet();
     }

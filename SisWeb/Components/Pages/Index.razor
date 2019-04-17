@@ -10,7 +10,14 @@
 
 @if (userSession.LastError == null)
 {
-    <h3>Vítejte @userSession.AuthInformation.FirstName v aplikaci SIS</h3>
+    if (userSession.AuthInformation != null)
+    {
+        <h3>Vítejte @userSession?.AuthInformation?.FirstName v aplikaci SIS</h3>
+    }
+    else
+    {
+        <h3>Vítejte v aplikaci SIS</h3>
+    }
 }
 else
 {
@@ -60,49 +67,46 @@ else
         {
             uriHelper.NavigateTo("/login");
         }
-
-        base.OnInitAsync();
     }
 
-    protected override void OnInit()
-    {
-        userSession = session.GetSession();
+    //protected override void OnInit()
+    //{
+    //    userSession = session.GetSession();
 
-        //#if DEBUG
-        //userSession.AuthInformation.Username = "tomasoplt";
-        //userSession.AuthInformation.Password = "heslo";
-        //userSession.AuthInformation.IsAuthentized = true;
-        //userSession.AuthInformation.Email = "tomas.oplt@seznam.cz";
-        //userSession.AuthInformation.FirstName = "Tomas";
-        //userSession.AuthInformation.Lastname = "Oplt";
-        //userSession.AuthInformation.Tel = "123456789";
-        //userSession.BaseUri = uriHelper.GetBaseUri().TrimEnd('/');
-        //userSession.Localities = new List<Services.Dto.Sis.LocalityModelDto>();
-        //Services.Dto.Sis.LocalityModelDto loc = new Services.Dto.Sis.LocalityModelDto();
-        //loc.LocalityId = 1;
-        //loc.LocalityName = "test";
-        //loc.IsLocal = true;
-        //loc.DbCatalog = "SIS";
-        //loc.DbServer = ".\\SQLEXPRESS";
+    //    //#if DEBUG
+    //    //userSession.AuthInformation.Username = "tomasoplt";
+    //    //userSession.AuthInformation.Password = "heslo";
+    //    //userSession.AuthInformation.IsAuthentized = true;
+    //    //userSession.AuthInformation.Email = "tomas.oplt@seznam.cz";
+    //    //userSession.AuthInformation.FirstName = "Tomas";
+    //    //userSession.AuthInformation.Lastname = "Oplt";
+    //    //userSession.AuthInformation.Tel = "123456789";
+    //    //userSession.BaseUri = uriHelper.GetBaseUri().TrimEnd('/');
+    //    //userSession.Localities = new List<Services.Dto.Sis.LocalityModelDto>();
+    //    //Services.Dto.Sis.LocalityModelDto loc = new Services.Dto.Sis.LocalityModelDto();
+    //    //loc.LocalityId = 1;
+    //    //loc.LocalityName = "test";
+    //    //loc.IsLocal = true;
+    //    //loc.DbCatalog = "SIS";
+    //    //loc.DbServer = ".\\SQLEXPRESS";
 
-        //userSession.Localities.Add(loc);
-        //userService.FillLocality(loc);
+    //    //userSession.Localities.Add(loc);
+    //    //userService.FillLocality(loc);
 
-        //#endif
+    //    //#endif
 
-        //if (!userSession.AuthInformation.IsAuthentized)
-        //{
-        //    uriHelper.NavigateTo("/login");
-        //    return;
-        //}
+    //    //if (!userSession.AuthInformation.IsAuthentized)
+    //    //{
+    //    //    uriHelper.NavigateTo("/login");
+    //    //    return;
+    //    //}
 
-        base.OnInit();
-    }
+    //    base.OnInit();
+    //}
 
     protected override void OnAfterRender()
     {
         jsRuntime.Resize();
-
         base.OnAfterRender();
     }
 }

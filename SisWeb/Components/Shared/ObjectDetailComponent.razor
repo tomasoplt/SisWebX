@@ -188,8 +188,8 @@
         UserAction = userSession.NavigateModel.Action;
 
         userSession.SetLocality(Convert.ToInt32(LocalityId));
-        ((ObjectService)(objectService)).SetConnectionString();
-        ((MrakService)(mrakService)).SetConnectionString();
+        ((ObjectService)(objectService)).SetConnectionString(userSession, Convert.ToInt32(LocalityId));
+        ((MrakService)(mrakService)).SetConnectionString(Convert.ToInt32(LocalityId));
 
 
         if (UserAction == "New")
@@ -232,7 +232,7 @@
 
     void OnOblastChanged(UIChangeEventArgs changeEvent)
     {
-        if (changeEvent.Value != null && changeEvent.Value != "")
+        if (changeEvent.Value != null && changeEvent.Value.ToString() != "")
             Obj.MrakId = Convert.ToInt32(changeEvent.Value);
         else
             Obj.MrakId = null;
@@ -322,8 +322,12 @@
         catch (Exception ex)
         {
             logger.LogError("OnSave", ex);
+
             userSession.LastError = ex;
+            session.SaveSession(userSession);
+
             uriHelper.NavigateTo("\\");
+
             return;
         }
 

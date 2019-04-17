@@ -81,7 +81,7 @@ else
         UserAction = userSession.NavigateModel.Action;
 
         userSession.SetLocality(Convert.ToInt32(LocalityId));
-        ((PlovakService)(plovakService)).SetConnectionString();
+        ((PlovakService)(plovakService)).SetConnectionString(Convert.ToInt32(LocalityId));
 
         plovaks = new List<PlovakModelDto>();
         userSession.BackUrl = $"/objekt";
@@ -131,14 +131,18 @@ else
         obj.delete_u = userSession.AuthInformation.Username;
         obj.delete_d = DateTime.Now;
         plovakService.Save(obj);
+
         LoadData();
         StateHasChanged();
     }
 
     void ViewDetail(string action, int id)
     {
+        userSession = session.GetSession();
         userSession.NavigateModel.Action = action;
         userSession.NavigateModel.PlovakId = id.ToString();
+        session.SaveSession(userSession);
+
         uriHelper.NavigateTo("/plovakdetail");
     }
 

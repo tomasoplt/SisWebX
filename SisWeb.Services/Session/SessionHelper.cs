@@ -1,64 +1,24 @@
 ﻿using System.Collections.Concurrent;
-using Hanssens.Net;
 using System;
 using System.Globalization;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace SisWeb.Services.Session
 {
     public class SessionHelper : ISessionHelper
     {
-        private ConcurrentDictionary<string, UserSession> dictionary = new ConcurrentDictionary<string, UserSession>();
+        //private ConcurrentDictionary<string, UserSession> dictionary = new ConcurrentDictionary<string, UserSession>();
         private const string SessionKey = "sisappsession";
         private const int MaxLifeTime = 30;
         private const string TimeFormat = "yyyyMMddHHmm";
+        private IHttpContextAccessor _httpContextAccessor;
 
-        public SessionHelper()
+        public string SessionDescription { get; set; }
+
+        public SessionHelper(IHttpContextAccessor httpContextAccessor)
         {
-            
-        }
-
-        public void DestroySession()
-        {
-            using (var storage = new LocalStorage())
-            {
-                if (storage.Exists(SessionKey))
-                {
-                    string guid = storage.Get<string>(SessionKey);
-                    if (dictionary.ContainsKey(guid))
-                    {
-                        if (!dictionary.TryRemove(guid, out UserSession removedSession))
-                            throw new ApplicationException("Error DestroySession for guid:" + guid);
-                    }
-                }
-            }
-
-            using (var storage = new LocalStorage())
-            {
-                storage.Clear();
-                storage.Persist();
-            }
-        }
-
-        private void RemoveOldSession()
-        {
-
-
-            DateTime timeBack = DateTime.Now.AddMinutes(-MaxLifeTime);
-            bool removed = true;
-
-            while (removed)
-            {
-                removed = false;
-                foreach (var session in dictionary)
-                {
-                    if (session.Value.LastDate < timeBack)
-                    {
-                        dictionary.TryRemove(session.Key, out UserSession removedSession);
-                        removed = true;
-                        break;
-                    }
-                }
-            }
+            _httpContextAccessor = httpContextAccessor;
         }
 
         private SessionParams GetSessionParams(string val)
@@ -74,35 +34,11 @@ namespace SisWeb.Services.Session
             return sessParams;
         }
 
-        public UserSession GetSession()
+        public string GetSessionKey()
         {
-            string guid = "";
-            DateTime timeBack = DateTime.Now.AddMinutes(-MaxLifeTime);
-
-            using (var storage = new LocalStorage())
-            {
-                if (storage.Exists(SessionKey))
-                {
-                    string sessionParameter = storage.Get<string>(SessionKey);
-                    SessionParams parms = GetSessionParams(sessionParameter);
-                    guid = parms.Guid;
-
-                    if (parms.Time == null || parms.Time.Value < timeBack)
-                    {
-                        guid = GenerateGuid();
-                        storage.Store(SessionKey, guid);
-                        storage.Persist();
-                    }
-                }
-                else
-                {
-                    guid = GenerateGuid();
-                    storage.Store(SessionKey, guid);
-                    storage.Persist();
-                }
-            }
-
-            return GetSession(guid);
+            string sessionParameter = _httpContextAccessor.HttpContext.Connection.Id;
+            SessionParams parms = GetSessionParams(sessionParameter);
+            return parms.Guid;
         }
 
         private string GenerateGuid()
@@ -110,23 +46,26 @@ namespace SisWeb.Services.Session
             return Guid.NewGuid().ToString() + "|" + DateTime.Now.ToString(TimeFormat);
         }
 
-        public UserSession GetSession(string guid)
+        public void SaveSession(UserSession session)
         {
-            RemoveOldSession();
+            var sessionString = JsonConvert.SerializeObject(session);
+            _httpContextAccessor.HttpContext.Session.SetString(SessionKey, sessionString);
+        }
 
+        public UserSession GetSession()
+        {
             UserSession session = null;
-            if (!dictionary.ContainsKey(guid))
+            string sessionValue = _httpContextAccessor.HttpContext.Session.GetString(SessionKey);
+
+            if (string.IsNullOrEmpty(sessionValue))
             {
-                session = new UserSession(guid);
-                if (!dictionary.TryAdd(guid, session))
-                    throw new ApplicationException("Error adding UserSesssion for guid:" + guid);
+                session = new UserSession(_httpContextAccessor.HttpContext.Connection.Id);
+                SaveSession(session);
             }
             else
             {
-                if (!dictionary.TryGetValue(guid, out session))
-                    throw new ApplicationException("Error getting UserSesssion for guid:" + guid);
-
-                session.MarkAsUsed();
+                var sessionString  = _httpContextAccessor.HttpContext.Session.GetString(SessionKey);
+                session = JsonConvert.DeserializeObject<UserSession>(sessionString);
             }
 
             return session;

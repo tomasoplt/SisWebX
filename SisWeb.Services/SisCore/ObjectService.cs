@@ -14,19 +14,18 @@ namespace SisWeb.Services.SisCore
     {
         private SISContext _context;
         private ISessionHelper _sessionHelper;
-        private UserSession _userSession;
 
         public ObjectService(AppDbContext context, ISessionHelper sessionHelper)
         {
             _sessionHelper = sessionHelper;
             _context = context as SISContext;
-            _userSession = _sessionHelper.GetSession();
         }
 
-        public void SetConnectionString()
+        public void SetConnectionString(UserSession userSession, int localityId)
         {
-            _context.SetConnectionString(_userSession.GetLocalityConnectionString());
+            _context.SetConnectionString(userSession.GetLocalityConnectionString(localityId));
         }
+      
 
         public void SaveObject(ObjectModelDto obj)
         {

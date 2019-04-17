@@ -38,6 +38,11 @@ namespace SisWeb.Services.Session
             LocalityId = localityId;
         }
 
+        public string GetLocalityConnectionString(int localityId)
+        {
+            return Localities.SingleOrDefault(x => x.LocalityId == localityId).GetConnectionString();
+        }
+
         public string GetLocalityConnectionString()
         {
             return Localities.SingleOrDefault(x => x.LocalityId == LocalityId).GetConnectionString();

@@ -37,15 +37,9 @@
                                 </a>
                             </li>
                             <li class="dropdown-item">
-                                <a href="#">
+                                <a href="/settings">
                                     <i class="fa fa-wrench"></i>
                                     Settings
-                                </a>
-                            </li>
-                            <li class="dropdown-item">
-                                <a href="#">
-                                    <i class="fa fa-info"></i>
-                                    Help
                                 </a>
                             </li>
                             <li class="dropdown-item">
@@ -81,39 +75,43 @@
 
                 <ul class='wraplist' style="height: auto;">
 
+                    @{
+                        userSession = session.GetSession();
+                    }
+
                     @if (userSession.Localities != null)
                     {
                         @foreach (var loc in userSession.Localities)
                         {
                             <li class="@IsDisabled(loc)">
-                                <a onclick="@(e => ViewObjekt(@loc))" href="#" class="" >
+                                <a onclick="@(e => ViewObjekt(@loc))" href="#" class="">
                                     <i class="fa fa-cube"></i>
                                     <span class="title">@loc.LocalityName</span>
                                     <span class="arrow open"></span>
                                 </a>
-                                
-                                <ul class="sub-menu">
-                                @foreach (var obj in loc.Objekty)
-                                {
-                                    <li>
-                                        <a onclick="@(e => ViewObjekt(@loc))" href="#" >
-                                            <span class="title">@obj.objekt</span>
-                                            <span class="arrow "></span>
-                                        </a>
 
-                                        @if (obj.Plovaky.Count != 0)
-                                        {
-                                            <ul class="sub-menu" style="display:block;">
-                                                <li>
-                                                    <a class="" href="#" onclick="@(e => ViewPlovak(@loc.LocalityId.ToString(), obj.objekt_id.ToString()))">
-                                                        @("plovák")
-                                                        <i class="fa fa-area-chart"></i>
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        }
-                                    </li>
-                                }
+                                <ul class="sub-menu">
+                                    @foreach (var obj in loc.Objekty)
+                                    {
+                                        <li>
+                                            <a onclick="@(e => ViewObjekt(@loc))" href="#">
+                                                <span class="title">@obj.objekt</span>
+                                                <span class="arrow "></span>
+                                            </a>
+
+                                            @if (obj.Plovaky.Count != 0)
+                                            {
+                                                <ul class="sub-menu" style="display:block;">
+                                                    <li>
+                                                        <a class="" href="#" onclick="@(e => ViewPlovak(@loc.LocalityId.ToString(), obj.objekt_id.ToString()))">
+                                                            @("plovák")
+                                                            <i class="fa fa-area-chart"></i>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            }
+                                        </li>
+                                    }
                                 </ul>
                             </li>
                         }
@@ -145,11 +143,13 @@
 
 @functions {
 
-        UserSession userSession = null;
+    UserSession userSession = null;
 
-    protected override void OnInit()
+    protected override async Task OnInitAsync()
     {
         userSession = session.GetSession();
+
+        base.OnInit();
     }
 
     string IsDisabled(SisWeb.Services.Dto.Sis.LocalityModelDto model)
@@ -162,6 +162,7 @@
 
     void GoBackUrl()
     {
+        userSession = session.GetSession();
         if (!string.IsNullOrEmpty(userSession.BackUrl))
         {
             uriHelper.NavigateTo(userSession.BackUrl);
@@ -170,6 +171,7 @@
 
     void GoForwardUrl()
     {
+        userSession = session.GetSession();
         if (!string.IsNullOrEmpty(userSession.ForwardUrl))
         {
             uriHelper.NavigateTo(userSession.ForwardUrl);
@@ -178,8 +180,10 @@
 
     void Logout()
     {
-        session.DestroySession();
+        userSession = session.GetSession();
         userSession.Clear();
+        session.SaveSession(userSession);
+
         uriHelper.NavigateTo("/login");
     }
 
@@ -188,16 +192,21 @@
         if (!model.IsLocal)
             return;
 
+        userSession = session.GetSession();
         userSession.NavigateModel.ObjektType = "objekt";
         userSession.NavigateModel.Action = "View";
         userSession.NavigateModel.LocalityId = model.LocalityId.ToString();
         userSession.NavigateModel.ObjektId = "";
+        session.SaveSession(userSession);
+
         uriHelper.NavigateTo("/objekt");
     }
 
     void ViewPlovak(string localityId, string objektId)
     {
         bool reload = false;
+
+        userSession = session.GetSession();
         if (userSession.NavigateModel.ObjektType == "plovak" && userSession.NavigateModel.ObjektId != objektId)
         {
             reload = true;
@@ -207,14 +216,14 @@
         userSession.NavigateModel.Action = "View";
         userSession.NavigateModel.LocalityId = localityId;
         userSession.NavigateModel.ObjektId = objektId;
+        session.SaveSession(userSession);
 
         if (reload)
         {
+            // jeden krok navic
             uriHelper.NavigateTo("\\");
-            uriHelper.NavigateTo("/plovak");
-            //uriHelper.NavigateTo("/objekt");
         }
-        else
-            uriHelper.NavigateTo("/plovak");
+
+        uriHelper.NavigateTo("/plovak");
     }
 }

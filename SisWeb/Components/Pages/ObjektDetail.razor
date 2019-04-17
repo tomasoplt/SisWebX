@@ -32,6 +32,7 @@
 
     protected override void OnParametersSet()
     {
+        userSession = session.GetSession();
         LocalityId = userSession.NavigateModel.LocalityId;
         ObjektId = userSession.NavigateModel.ObjektId;
         UserAction = userSession.NavigateModel.Action;

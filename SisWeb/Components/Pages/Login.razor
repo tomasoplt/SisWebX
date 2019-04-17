@@ -2,8 +2,6 @@
 @inject IUriHelper uriHelper
 @inject SisWeb.Services.Authentication.IUserService userService
 @inject SisWeb.Services.Session.ISessionHelper session
-@using Core.Core.NetCore.Session
-@using Microsoft.AspNetCore.Http
 @using SisWeb.Services.Session
 
 <div class='col-12'>
@@ -49,12 +47,9 @@
     string username { get; set; } = "";
     string password { get; set; } = "";
     string message { get; set; } = "";
-    private UserSession userSession = null;
 
     protected override async Task OnInitAsync()
     {
-        userSession = session.GetSession();
-
         base.OnInit();
     }
 
@@ -72,6 +67,7 @@
     {
         try
         {
+            UserSession userSession = session.GetSession();
             var result = await userService.LoginUser(username, password, true);
             if (result.IsAuthentized)
             {
@@ -83,10 +79,18 @@
                 userSession.AuthInformation.Lastname = result.Lastname;
                 userSession.AuthInformation.Tel = result.Tel;
                 userSession.BaseUri = uriHelper.GetBaseUri().TrimEnd('/');
+                
+                // Save session information
+                session.SaveSession(userSession);
 
                 // Load localities
                 userSession.Localities = await userService.GetUserLocalities(userSession.AuthInformation.Username, userSession.AuthInformation.Password, true);
+                session.SessionDescription = userSession.Guid;
+                
+                // Save session information
+                session.SaveSession(userSession);
 
+                // Vrat se na uvodni stranku
                 uriHelper.NavigateTo("/");
             }
             else

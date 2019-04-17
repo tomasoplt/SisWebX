@@ -14,18 +14,17 @@ namespace SisWeb.Services.SisCore
     {
         private SISContext _context;
         private ISessionHelper _sessionHelper;
-        private UserSession _userSession;
 
         public PlovakService(AppDbContext context, ISessionHelper sessionHelper)
         {
             _sessionHelper = sessionHelper;
             _context = context as SISContext;
-            _userSession = _sessionHelper.GetSession();
         }
 
-        public void SetConnectionString()
+        public void SetConnectionString(int localityId)
         {
-            _context.SetConnectionString(_userSession.GetLocalityConnectionString());
+            UserSession userSession = _sessionHelper.GetSession();
+            _context.SetConnectionString(userSession.GetLocalityConnectionString(localityId));
         }
 
         public void Save(PlovakModelDto obj)

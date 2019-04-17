@@ -13,6 +13,7 @@ using SisWeb.Components;
 using SisWeb.EF.Models;
 using SisWeb.Services;
 using System;
+using Core.Core.HttpContextExtensions;
 
 namespace SisWeb
 {
@@ -39,7 +40,9 @@ namespace SisWeb
             services.AddApplicationServices();
             services.AddTelerikBlazor();
             services.AddRazorComponents();
-            
+            services.AddHttpContextAccessor();
+            services.AddScoped<HttpContextAccessor>();
+
             services.AddSession(options =>
             {
                 options.Cookie.Name = ".SisWeb.Session";

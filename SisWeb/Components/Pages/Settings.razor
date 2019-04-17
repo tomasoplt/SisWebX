@@ -1,0 +1,49 @@
+﻿@page "/settings"
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Http
+@inject SisWeb.Services.Session.ISessionHelper session
+@inject IHttpContextAccessor httpContextAccessor
+
+<h3>Nastavení aplikace</h3>
+<div class="container">
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <div class="panel panel-danger">
+                <div class="panel-heading">
+                    <h3 class="text-center">
+                        <small>Application settings</small>
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <p>Values</p>
+
+                    <ul class="list-group">
+                        <li class="list-group-item">"Connection ID:" @ConnectionId</li>
+                        <li class="list-group-item">"Session ID:" @SessionId</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+
+        </div>
+    </div>
+
+</div>
+
+@functions {
+
+    string ConnectionId { get; set; }
+    string SessionId { get; set; }
+
+    protected override void OnInit()
+    {
+        ConnectionId = httpContextAccessor.HttpContext.Connection.Id;
+        SessionId = httpContextAccessor.HttpContext.Session.Id;
+    }
+}

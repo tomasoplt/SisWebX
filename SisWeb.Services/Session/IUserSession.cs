@@ -20,9 +20,10 @@ namespace SisWeb.Services.Session
         AuthResultDto AuthInformation { get; set; }
         NavigateModelDto NavigateModel { get; set; }
         List<LocalityModelDto> Localities { get; set; }
-        string GetLocalityConnectionString();
-        void SetLocality(int localityId);
         void Clear();
         void MarkAsUsed();
+        void SetLocality(int localityId);
+        string GetLocalityConnectionString();
+
     }
 }

@@ -87,9 +87,10 @@ else
     {
         try
         {
+            userSession = session.GetSession();
             LocalityId = userSession.NavigateModel.LocalityId;
             userSession.SetLocality(Convert.ToInt32(LocalityId));
-            ((ObjectService)(objectService)).SetConnectionString();
+            ((ObjectService)(objectService)).SetConnectionString(userSession, Convert.ToInt32(LocalityId));
             objects = objectService.GetObjects(false);
         }
         catch (Exception ex)
@@ -128,9 +129,12 @@ else
 
     void OnNew()
     {
+        userSession = session.GetSession();
         userSession.NavigateModel.LocalityId = userSession.LocalityId.ToString();
         userSession.NavigateModel.ObjektId = "0";
         userSession.NavigateModel.Action = "New";
+        session.SaveSession(userSession);
+        
         uriHelper.NavigateTo($"/objektdetail");
     }
 
@@ -160,18 +164,24 @@ else
     void TriggerPlovak(GridCommandEventArgs args)
     {
         var item = (args.Item as ObjectModelDto);
+
+        userSession = session.GetSession();
         userSession.NavigateModel.LocalityId = userSession.LocalityId.ToString();
         userSession.NavigateModel.ObjektId = item.objekt_id.Value.ToString();
         userSession.NavigateModel.Action = "View";
+        session.SaveSession(userSession);
 
         uriHelper.NavigateTo($"/plovak");
     }
 
     void TriggerObjectDetail(string action, ObjectModelDto item)
     {
+        userSession = session.GetSession();
         userSession.NavigateModel.LocalityId = userSession.LocalityId.ToString();
         userSession.NavigateModel.ObjektId = item.objekt_id.Value.ToString();
         userSession.NavigateModel.Action = action;
+        session.SaveSession(userSession);
+
         uriHelper.NavigateTo($"/objektdetail");
     }
 
