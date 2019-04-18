@@ -23,8 +23,8 @@ else
 
     <Row>
         <Column>
-            <button class="btn btn-primary" onclick="@GoBack">Zpět na objekt</button>
-            <button class="btn btn-primary" onclick="@UpdateChart">Obnov graf</button>
+            <button class="btn btn-primary" onclick="@GoBack">Zpět na objekty</button>
+            <button class="btn btn-primary" onclick="@UpdateChart">Obnovení</button>
             <span class="badge badge-pill badge-light">
                 Čas zobrazení @DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss")
             </span> 
@@ -39,9 +39,9 @@ else
     <TelerikGrid Data=@plovaks Pageable="true" PageSize="@gridPageSize" Sortable="true">
 
         <TelerikGridColumns>
-            <TelerikGridColumn Title="Měřeno" Width="200" Field=@nameof(PlovakModelDto.Merenos) />
-            <TelerikGridColumn Title="Napětí panel" Width="200" Field=@nameof(PlovakModelDto.NapetiPanel) />
-            <TelerikGridColumn Title="Napětí Aku" Width="200" Field=@nameof(PlovakModelDto.NapetiAku) />
+            <TelerikGridColumn Title="Měřeno" Field=@nameof(PlovakModelDto.Merenos) />
+            <TelerikGridColumn Title="Napětí panel" Width="150" Field=@nameof(PlovakModelDto.NapetiPanel) />
+            <TelerikGridColumn Title="Napětí Aku" Width="150" Field=@nameof(PlovakModelDto.NapetiAku) />
             <TelerikGridColumn Title="Poznámka" Field=@nameof(PlovakModelDto.Poznamka) />
 
             <TelerikGridCommandColumn>
