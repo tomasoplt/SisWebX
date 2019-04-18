@@ -82,21 +82,15 @@ else
             return;
         }
 
-        var graphSection = configuration.GetSection("Objekty");
-        var chartSettingsSection = graphSection.GetSection("ChartSettings");
-        var gridSettingsSection = graphSection.GetSection("GridSettings");
-
-        int chartMaxRecords = chartSettingsSection.GetValue<int>("MaxRecords");
-        gridPageSize = gridSettingsSection.GetValue<int>("pagingFloatsMaxCount");
-
-        base.OnInit();
-    }
-
-    protected override void OnParametersSet()
-    {
         try
         {
-            userSession = session.GetSession();
+            var graphSection = configuration.GetSection("Objekty");
+            var chartSettingsSection = graphSection.GetSection("ChartSettings");
+            var gridSettingsSection = graphSection.GetSection("GridSettings");
+
+            int chartMaxRecords = chartSettingsSection.GetValue<int>("MaxRecords");
+            gridPageSize = gridSettingsSection.GetValue<int>("pagingFloatsMaxCount");
+
             LocalityId = userSession.NavigateModel.LocalityId;
             userSession.SetLocality(Convert.ToInt32(LocalityId));
             ((ObjectService)(objectService)).SetConnectionString(userSession, Convert.ToInt32(LocalityId));
@@ -104,14 +98,17 @@ else
         }
         catch (Exception ex)
         {
-            logger.LogError("OnParametersSet", ex);
+            logger.LogError("OnInit", ex);
             userSession.LastError = ex;
+            session.SaveSession(userSession);
             uriHelper.NavigateTo("\\");
             return;
         }
 
-        base.OnParametersSet();
+        base.OnInit();
     }
+
+    
 
     void OnSearch()
     {

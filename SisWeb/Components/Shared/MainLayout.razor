@@ -189,13 +189,26 @@
         if (!model.IsLocal)
             return;
 
+        bool reload = false;
+
         UserSession userSession = session.GetSession();
+        if (userSession.NavigateModel.ObjektType == "objekt" && userSession.NavigateModel.LocalityId != model.LocalityId.Value.ToString())
+        {
+            reload = true;
+        }
+
         userSession.NavigateModel.ObjektType = "objekt";
         userSession.NavigateModel.Action = "View";
         userSession.NavigateModel.LocalityId = model.LocalityId.ToString();
         userSession.NavigateModel.ObjektId = "";
         userSession.SetLocality(model.LocalityId.Value);
         session.SaveSession(userSession);
+
+        if (reload)
+        {
+            // jeden krok navic
+            uriHelper.NavigateTo("\\");
+        }
 
         uriHelper.NavigateTo("/objekt");
     }

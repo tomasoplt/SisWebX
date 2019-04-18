@@ -29,7 +29,9 @@ namespace SisWeb.Services.SisCore
 
         public List<MrakModelDto> GetMraky()
         {
-            List<MrakModelDto> list = _context.Mraky.AsNoTracking().OrderBy(x => x.Mrak).Select(b =>
+            using (var ctx = new SISContext(_context.ConnectionString))
+            {
+                List<MrakModelDto> list = ctx.Mraky.AsNoTracking().OrderBy(x => x.Mrak).Select(b =>
                 new MrakModelDto()
                 {
                     mrak_id = b.MrakId,
@@ -37,7 +39,8 @@ namespace SisWeb.Services.SisCore
                     Poznamka = b.Poznamka,
                 }).ToList();
 
-            return list;
+                return list;
+            }
         }
     }
 }

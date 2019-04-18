@@ -29,15 +29,12 @@ namespace SisWeb.Services.SisCore
 
         public void Save(PlovakModelDto obj)
         {
-            try
+            using (var ctx = new SISContext(_context.ConnectionString))
             {
-                var dbObj = _context.Plovaky.SingleOrDefault(x => x.PlovakId == obj.PlovakId);
+                var dbObj = ctx.Plovaky.SingleOrDefault(x => x.PlovakId == obj.PlovakId);
 
                 dbObj.NapetiAku = obj.NapetiAku;
                 dbObj.NapetiPanel = obj.NapetiPanel;
-
-                //dbObj.Mereno = obj.Mereno;
-                //dbObj.Poznamka = obj.Poznamka;
 
                 dbObj.NewD = obj.new_d;
                 dbObj.NewU = obj.new_u;
@@ -49,20 +46,17 @@ namespace SisWeb.Services.SisCore
                 dbObj.DeleteD = obj.delete_d;
 
                 dbObj.Reftime = dbObj.ModifD;
-                
 
-                _context.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
+                ctx.SaveChanges();
             }
         }
 
         public PlovakModelDto GetSingle(int plovak_id)
         {
-            var obj = _context.Plovaky.Where(x => x.PlovakId == plovak_id)
-            .Select(b =>
+            using (var ctx = new SISContext(_context.ConnectionString))
+            {
+                var obj = ctx.Plovaky.Where(x => x.PlovakId == plovak_id)
+                .Select(b =>
                 new PlovakModelDto()
                 {
                     PlovakId = b.PlovakId,
@@ -79,12 +73,15 @@ namespace SisWeb.Services.SisCore
                     delete_u = b.DeleteU
                 }).SingleOrDefault();
 
-            return obj;
+                return obj;
+            }
         }
 
         public List<PlovakModelDto> GetPlovaky(int objekt_id)
         {
-            List<PlovakModelDto>  plovaky = _context.Plovaky.AsNoTracking()
+            using (var ctx = new SISContext(_context.ConnectionString))
+            {
+                List<PlovakModelDto> plovaky = ctx.Plovaky.AsNoTracking()
                 .Where(x => x.ObjektId == objekt_id && x.DeleteD == null)
                 .OrderByDescending(x => x.Mereno).Select(b =>
                 new PlovakModelDto()
@@ -103,7 +100,8 @@ namespace SisWeb.Services.SisCore
                     delete_u = b.DeleteU
                 }).ToList();
 
-            return plovaky;
+                return plovaky;
+            }
         }
 
         public void GetGraphData(int objekt_id)

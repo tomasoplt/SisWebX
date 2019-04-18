@@ -24,7 +24,10 @@ else
     <Row>
         <Column>
             <button class="btn btn-primary" onclick="@GoBack">Zpět na objekt</button>
-            @*<button class="btn btn-primary" onclick="@UpdateChart">Obnov graf</button>*@
+            <button class="btn btn-primary" onclick="@UpdateChart">Obnov graf</button>
+            <span class="badge badge-pill badge-light">
+                Čas zobrazení @DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss")
+            </span> 
         </Column>
     </Row>
 
@@ -85,7 +88,9 @@ else
         ((PlovakService)(plovakService)).SetConnectionString(Convert.ToInt32(LocalityId));
 
         plovaks = new List<PlovakModelDto>();
+
         userSession.BackUrl = $"/objekt";
+        session.SaveSession(userSession);
 
         LoadData();
 

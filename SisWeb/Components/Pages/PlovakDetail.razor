@@ -8,6 +8,7 @@
 @inject IUriHelper uriHelper
 @inject SisWeb.Services.Session.ISessionHelper session
 @inject SisWeb.Services.SisCore.IPlovakService plovakService
+@inject ILogger<PlovakDetail> logger
 
 @if (@Obj != null)
 {
@@ -75,11 +76,7 @@
             return;
         }
 
-        base.OnInit();
-    }
 
-    protected override void OnParametersSet()
-    {
         LocalityId = userSession.NavigateModel.LocalityId;
         ObjektId = userSession.NavigateModel.ObjektId;
         UserAction = userSession.NavigateModel.Action;
@@ -89,12 +86,14 @@
         ((PlovakService)(plovakService)).SetConnectionString(localityId);
 
         Obj = plovakService.GetSingle(Convert.ToInt32(userSession.NavigateModel.PlovakId));
+
         userSession.BackUrl = $"/plovak";
         session.SaveSession(userSession);
 
-        base.OnParametersSet();
+        base.OnInit();
     }
 
+   
     void OnNapeniPanelChanged(UIChangeEventArgs changeEvent)
     {
         if (double.TryParse((string)changeEvent.Value, out double value))
@@ -126,18 +125,30 @@
 
     void OnSave()
     {
-        if (UserAction == "New")
+        try
         {
-            Obj.new_u = userSession.AuthInformation.Username;
-            Obj.new_d = DateTime.Now;
+            if (UserAction == "New")
+            {
+                Obj.new_u = userSession.AuthInformation.Username;
+                Obj.new_d = DateTime.Now;
+            }
+            else
+            {
+                Obj.modif_u = userSession.AuthInformation.Username;
+                Obj.modif_d = DateTime.Now;
+            }
+
+            plovakService.Save(Obj);
         }
-        else
+        catch (Exception ex)
         {
-            Obj.modif_u = userSession.AuthInformation.Username;
-            Obj.modif_d = DateTime.Now;
+            logger.LogError("OnSave", ex);
+            userSession.LastError = ex;
+            session.SaveSession(userSession);
+            uriHelper.NavigateTo("\\");
+            return;
         }
 
-        plovakService.Save(Obj);
         GoBack();
     }
 

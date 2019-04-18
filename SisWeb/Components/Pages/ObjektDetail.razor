@@ -38,7 +38,8 @@
         UserAction = userSession.NavigateModel.Action;
 
         userSession.BackUrl = $"/objekt";
-
+        session.SaveSession(userSession);
+            
         base.OnParametersSet();
     }
 
