@@ -94,7 +94,7 @@ namespace SisWeb.Services.Authentication
             foreach ( var localLocality in localLocalities)
             {
                 localLocality.IsLocal = true;
-                FillLocality(localLocality, userSession);
+                //FillLocality(localLocality, userSession);
             }
 
             return list;

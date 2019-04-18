@@ -4,11 +4,13 @@
 @inject SisWeb.Services.Session.ISessionHelper session
 @inject SisWeb.Services.SisCore.IObjectService objectService
 @inject ILogger<Objekt> logger
+@inject IConfiguration configuration
 
 @using SisWeb.Services.Dto.Sis
 @using SisWeb.Services.SisCore;
 @using Telerik.Blazor.Components.Grid
 @using SisWeb.Services.Session
+@using Microsoft.Extensions.Configuration;
 
 @if (objects == null)
 {
@@ -36,11 +38,11 @@ else
 
     <Row>
         <Column>
-            <TelerikGrid Data=@objects Pageable="true" PageSize=20 Sortable="true">
+            <TelerikGrid Data=@objects Pageable="true" PageSize="@gridPageSize" Sortable="true">
                 <TelerikGridColumns>
                     <TelerikGridColumn Title="Objekt" Field=@nameof(ObjectModelDto.objekt) />
-                    <TelerikGridColumn Title="Typ objektu" Field=@nameof(ObjectModelDto.typ) />
-                    <TelerikGridColumn Title="Oblast" Field=@nameof(ObjectModelDto.oblast) />
+                    <TelerikGridColumn Title="Typ objektu" Width="200" Field=@nameof(ObjectModelDto.typ) />
+                    <TelerikGridColumn Title="Oblast" Width="200" Field=@nameof(ObjectModelDto.oblast) />
 
                     <TelerikGridCommandColumn>
                         <TelerikGridCommandButton Command="View" Icon="edit" OnClick="TriggerView">Náhled</TelerikGridCommandButton>
@@ -51,7 +53,7 @@ else
 
                 </TelerikGridColumns>
 
-             
+
 
             </TelerikGrid>
         </Column>
@@ -65,10 +67,10 @@ else
     string removeQuestion = "";
     int removeId = 0;
     List<ObjectModelDto> objects;
-    private List<PlovakModelDto> plovaks;
-    private string nazevObjektu;
-    private UserSession userSession = null;
-
+    List<PlovakModelDto> plovaks;
+    string nazevObjektu;
+    UserSession userSession = null;
+    int gridPageSize = 20;
 
     protected override void OnInit()
     {
@@ -79,6 +81,13 @@ else
             uriHelper.NavigateTo("/login");
             return;
         }
+
+        var graphSection = configuration.GetSection("Objekty");
+        var chartSettingsSection = graphSection.GetSection("ChartSettings");
+        var gridSettingsSection = graphSection.GetSection("GridSettings");
+
+        int chartMaxRecords = chartSettingsSection.GetValue<int>("MaxRecords");
+        gridPageSize = gridSettingsSection.GetValue<int>("pagingFloatsMaxCount");
 
         base.OnInit();
     }
@@ -134,7 +143,7 @@ else
         userSession.NavigateModel.ObjektId = "0";
         userSession.NavigateModel.Action = "New";
         session.SaveSession(userSession);
-        
+
         uriHelper.NavigateTo($"/objektdetail");
     }
 

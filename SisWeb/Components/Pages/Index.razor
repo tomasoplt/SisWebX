@@ -1,12 +1,12 @@
 ﻿@page "/"
 
+@using ChartJs.Blazor.ChartJS
+@using SisWeb.Services.Session
+
 @inject IUriHelper uriHelper
 @inject SisWeb.Services.Session.ISessionHelper session
 @inject SisWeb.Services.Authentication.IUserService userService
 @inject IJSRuntime jsRuntime
-
-@using ChartJs.Blazor.ChartJS
-@using SisWeb.Services.Session
 
 @if (userSession.LastError == null)
 {
@@ -106,7 +106,7 @@ else
 
     protected override void OnAfterRender()
     {
-        jsRuntime.Resize();
+        //jsRuntime.Resize();
         base.OnAfterRender();
     }
 }

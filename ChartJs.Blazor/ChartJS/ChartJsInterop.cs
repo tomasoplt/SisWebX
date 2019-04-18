@@ -21,11 +21,11 @@ namespace ChartJs.Blazor.ChartJS
             }
         }
 
-        public static async Task<bool> SetupChart(this IJSRuntime jsRuntime, ChartConfigBase chartConfig)
+        public static async Task<object> SetupChart(this IJSRuntime jsRuntime, ChartConfigBase chartConfig)
         {
             try
             {
-                return await jsRuntime.InvokeAsync<bool>("ChartJSInterop.SetupChart", SerializeConfig(chartConfig));
+                await jsRuntime.InvokeAsync<object>("ChartJSInterop.SetupChart", SerializeConfig(chartConfig));
             }
             catch (Exception exp)
             {
@@ -39,7 +39,7 @@ namespace ChartJs.Blazor.ChartJS
         {
             try
             {
-                return await jsRuntime.InvokeAsync<bool>("ChartJSInterop.UpdateChart", SerializeConfig(chartConfig));
+                await jsRuntime.InvokeAsync<object>("ChartJSInterop.UpdateChart", SerializeConfig(chartConfig));
             }
             catch (Exception exp)
             {

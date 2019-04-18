@@ -197,6 +197,7 @@
         userSession.NavigateModel.Action = "View";
         userSession.NavigateModel.LocalityId = model.LocalityId.ToString();
         userSession.NavigateModel.ObjektId = "";
+        userSession.SetLocality(model.LocalityId.Value);
         session.SaveSession(userSession);
 
         uriHelper.NavigateTo("/objekt");
@@ -216,6 +217,7 @@
         userSession.NavigateModel.Action = "View";
         userSession.NavigateModel.LocalityId = localityId;
         userSession.NavigateModel.ObjektId = objektId;
+        userSession.SetLocality(Convert.ToInt32(localityId));
         session.SaveSession(userSession);
 
         if (reload)

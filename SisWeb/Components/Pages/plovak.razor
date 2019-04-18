@@ -33,12 +33,12 @@ else
     
     <br />
 
-    <TelerikGrid Data=@plovaks Pageable="true" PageSize=20 Sortable="true">
+    <TelerikGrid Data=@plovaks Pageable="true" PageSize="@gridPageSize" Sortable="true">
 
         <TelerikGridColumns>
-            <TelerikGridColumn Title="Měřeno" Field=@nameof(PlovakModelDto.Merenos) />
-            <TelerikGridColumn Title="Napětí panel" Field=@nameof(PlovakModelDto.NapetiPanel) />
-            <TelerikGridColumn Title="Napětí Aku" Field=@nameof(PlovakModelDto.NapetiAku) />
+            <TelerikGridColumn Title="Měřeno" Width="200" Field=@nameof(PlovakModelDto.Merenos) />
+            <TelerikGridColumn Title="Napětí panel" Width="200" Field=@nameof(PlovakModelDto.NapetiPanel) />
+            <TelerikGridColumn Title="Napětí Aku" Width="200" Field=@nameof(PlovakModelDto.NapetiAku) />
             <TelerikGridColumn Title="Poznámka" Field=@nameof(PlovakModelDto.Poznamka) />
 
             <TelerikGridCommandColumn>
@@ -65,7 +65,8 @@ else
     bool isPopupOpen = false;
     string removeQuestion = "";
     int removeId = 0;
-    private UserSession userSession = null;
+    UserSession userSession = null;
+    int gridPageSize = 20;
 
     protected override void OnInit()
     {
@@ -97,15 +98,19 @@ else
         plovaks.Clear();
         plovaks.AddRange(data);
 
-        var graphSection = configuration.GetSection("Graph");
-        var settingsSection = graphSection.GetSection("Settings");
-        int maxRecords = settingsSection.GetValue<int>("MaxRecords");
-        int verticalRangeMin = settingsSection.GetValue<int>("VerticalRangeMin");
-        int verticalRangeMax = settingsSection.GetValue<int>("VerticalRangeMax");
+        var graphSection = configuration.GetSection("Plovaky");
+        var chartSettingsSection = graphSection.GetSection("ChartSettings");
+        var gridSettingsSection = graphSection.GetSection("GridSettings");
+
+        int chartMaxRecords = chartSettingsSection.GetValue<int>("MaxRecords");
+        gridPageSize = gridSettingsSection.GetValue<int>("pagingFloatsMaxCount");
+
+        int minVoltageFloatChart = chartSettingsSection.GetValue<int>("minVoltageFloatChart");
+        int maxVoltageFloatChart = chartSettingsSection.GetValue<int>("maxVoltageFloatChart");
 
         var lineChartSvc = new LineChartService();
-        var plovaksForGraph = plovaks.Where(x=>x.Mereno != null).Take(maxRecords).OrderBy(x => x.Mereno).ToList();
-        lineChartConfig = lineChartSvc.GetConfiguration("Plováky", plovaksForGraph, verticalRangeMin, verticalRangeMax);
+        var plovaksForGraph = plovaks.Where(x=>x.Mereno != null).Take(chartMaxRecords).OrderBy(x => x.Mereno).ToList();
+        lineChartConfig = lineChartSvc.GetConfiguration("Plováky", plovaksForGraph, minVoltageFloatChart, maxVoltageFloatChart);
     }
 
     void GoBack()
