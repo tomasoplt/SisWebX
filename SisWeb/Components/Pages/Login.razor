@@ -90,6 +90,8 @@
                 // Save session information
                 session.SaveSession(userSession);
 
+                StateHasChanged();
+
                 // Vrat se na uvodni stranku
                 uriHelper.NavigateTo("/");
             }

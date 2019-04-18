@@ -27,7 +27,7 @@
                     <li class="profile list-inline-item showopacity">
                         <a href="#" data-toggle="dropdown" class="toggle">
                             <img src="/data/profile/profile.jpg" alt="user-image" class="rounded-circle img-inline">
-                            <span>@userSession.AuthInformation.FullName &nbsp;<i class="fa fa-angle-down"></i></span>
+                            <span>@GetUserFullName() &nbsp;<i class="fa fa-angle-down"></i></span>
                         </a>
                         <ul class="dropdown-menu profile animated fadeIn">
                             <li class="dropdown-item">
@@ -76,7 +76,7 @@
                 <ul class='wraplist' style="height: auto;">
 
                     @{
-                        userSession = session.GetSession();
+                        UserSession userSession = session.GetSession();
                     }
 
                     @if (userSession.Localities != null)
@@ -143,13 +143,10 @@
 
 @functions {
 
-    UserSession userSession = null;
-
-    protected override async Task OnInitAsync()
+    string GetUserFullName()
     {
-        userSession = session.GetSession();
-
-        base.OnInit();
+        UserSession userSession = session.GetSession();
+        return userSession.AuthInformation?.FullName ?? "";
     }
 
     string IsDisabled(SisWeb.Services.Dto.Sis.LocalityModelDto model)
@@ -162,7 +159,7 @@
 
     void GoBackUrl()
     {
-        userSession = session.GetSession();
+        UserSession userSession = session.GetSession();
         if (!string.IsNullOrEmpty(userSession.BackUrl))
         {
             uriHelper.NavigateTo(userSession.BackUrl);
@@ -171,7 +168,7 @@
 
     void GoForwardUrl()
     {
-        userSession = session.GetSession();
+        UserSession userSession = session.GetSession();
         if (!string.IsNullOrEmpty(userSession.ForwardUrl))
         {
             uriHelper.NavigateTo(userSession.ForwardUrl);
@@ -180,7 +177,7 @@
 
     void Logout()
     {
-        userSession = session.GetSession();
+        UserSession userSession = session.GetSession();
         userSession.Clear();
         session.SaveSession(userSession);
 
@@ -192,7 +189,7 @@
         if (!model.IsLocal)
             return;
 
-        userSession = session.GetSession();
+        UserSession userSession = session.GetSession();
         userSession.NavigateModel.ObjektType = "objekt";
         userSession.NavigateModel.Action = "View";
         userSession.NavigateModel.LocalityId = model.LocalityId.ToString();
@@ -207,7 +204,7 @@
     {
         bool reload = false;
 
-        userSession = session.GetSession();
+        UserSession userSession = session.GetSession();
         if (userSession.NavigateModel.ObjektType == "plovak" && userSession.NavigateModel.ObjektId != objektId)
         {
             reload = true;
